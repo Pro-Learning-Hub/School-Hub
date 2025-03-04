@@ -42,7 +42,7 @@
     "workbox-streams": "^6.6.0"
   },
   "scripts": {
-    "start": "BROWSER=none PORT=3001 react-scripts start",
+    "start": "BROWSER=none PORT=3001 react-scripts start --ignoreWarnings=false",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
