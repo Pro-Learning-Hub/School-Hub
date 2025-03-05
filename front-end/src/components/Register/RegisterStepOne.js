@@ -102,13 +102,7 @@ export default function RegisterStepOne({ setStep, userData, handleInputChange }
               <span className="label-input100">Password</span>
             </div>
 
-            <div className="flex-sb-m w-full p-t-3 p-b-32 justify-content-end">
-                <a href="#" className="txt1">
-                  Forgot Password?
-                </a>
-            </div>
-
-            <div className="container-login100-form-btn">
+            <div className="container-login100-form-btn mt-4">
               <button type="submit" className="login100-form-btn">
                 Next
               </button>
