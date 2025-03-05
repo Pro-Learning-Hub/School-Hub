@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { Routes, Route, Navigate, Outlet} from 'react-router-dom';
 import './App.css';
@@ -7,7 +7,6 @@ import './components/Login/css/util.css';
 import './components/Login/css/main.css';
 import './components/Register/css/util.css';
 import './components/Register/css/main.css';
-import { logout, logoutThunk } from './redux/actions/uiActionCreators';
 import Spinner from './components/utilityComponents/Spinner';
 import Lectures from './components/Lectures/Lectures';
 import Announcements from './components/Announcements/Announcements'
@@ -33,12 +32,8 @@ function ProtectedLayout() {
 
 function App() {
   const isLoading = useSelector((state) => state.ui.get('isLoading'));
-  const dispatch = useDispatch();
 
   useConnectSocket();
-  const handleLogout = () => {
-    dispatch(logoutThunk());
-  };
 
   return (
     <div className="APP">
