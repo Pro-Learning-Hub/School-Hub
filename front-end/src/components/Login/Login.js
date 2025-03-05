@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { User, University } from 'lucide-react';
 import { formLogin, googleLogin, loginFailure } from '../../redux/actions/uiActionCreators';
 import { GoogleLogin } from '@react-oauth/google';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import $ from 'jquery';
 import { selectCourseId } from '../../redux/selectors/uiSelectors';
 
@@ -169,9 +169,9 @@ export default function Login({ setType }) {
 
                             {/* Forgot Password Link */}
                             <div className="flex-sb-m w-full p-t-3 p-b-32 justify-content-end">
-                                <a href="#" className="txt1">
+                                <button className="txt1" style={{ textDecoration: 'underline' }}>
                                     Forgot Password?
-                                </a>
+                                </button>
                             </div>
 
                             {/* Login Button */}
@@ -183,9 +183,9 @@ export default function Login({ setType }) {
 
                             {/* Create New Account Link */}
                             <div className="p-2 mt-3 text-center p-t-15">
-                                <a href="#" className="txt1" onClick={() => navigate('/register')}>
+                                <Link to="/register" className="txt1">
                                     Create new Account
-                                </a>
+                                </Link>
                             </div>
 
                             {/* Social Login */}

@@ -34,5 +34,5 @@ export default function useSyncLectureEntry() {
 
 			}
 		}
-	}, [dispatch, isSocketReady, socket]);
+	}, [dispatch, isSocketReady, socket, navigate]);
 }

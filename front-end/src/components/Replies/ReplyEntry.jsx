@@ -27,7 +27,6 @@ export default function ReplyEntry({ content, questionId }) {
   const userId = useSelector(selectUserId);
   const [showOptions, setShowOptions] = useState(false);
   const dispatch = useDispatch();
-  const date = formatDate(content.get('updatedAt'));
 
   const upvotes = useSelector(
     makeReplyUpvotesSelector(questionId, content.get('id'))
