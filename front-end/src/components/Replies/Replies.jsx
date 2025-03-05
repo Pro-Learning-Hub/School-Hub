@@ -59,7 +59,9 @@ export default function Replies() {
       dispatch(toggleLoading());
     }
   };
-  {/* Now, I'll be a dectateo and make him only go to discusssiosn.
+  // 📝🔔I did already solve this problem but I like the comment so, i'll leave it.
+  
+  /* Now, I'll be a dectateo and make him only go to discusssiosn.
   because honestly.. I don'tknow how to findout he was comming from genreal questions
   or from a specific lecture with an id... OR.. FROM OUTSIDE OF THE APP!,
   SO, NAVIGATE(-1) WON'T WORK HERE...
@@ -67,7 +69,7 @@ export default function Replies() {
   i'm really really really running out of time here. and no time for my perfectionism..
 
   It would be very imparasing if I actually find out later that's a very simple problem!
-  */}
+  */
 
   return (
     <div className="container mt-5">
