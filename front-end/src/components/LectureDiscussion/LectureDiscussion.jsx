@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../utilityComponents/Loading';
-import SearchField from '../sharedComponents/SearchField';
 import './css/discussion.css';
 import DiscussionEntryEditor from '../DiscussionEntries/DiscussionEntryEditor';
 import DiscussionEntries from '../DiscussionEntries/DiscussionEntries';
@@ -15,6 +14,7 @@ import {
 } from '../../redux/selectors/DiscussionsSelectors';
 import useSyncLectureDiscussions from '../../hooks/syncLecturesDiscussionsHook';
 import { useJoinRoom } from '../../hooks/socketConnectionHooks';
+
 
 export default function LectureDiscussion({ lectureId = '' }) {
   const [askNewQuestion, setAskNewQuestion] = useState(false);
