@@ -3,6 +3,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { googleRegister, registerFailure } from '../../redux/actions/uiActionCreators';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCourseId } from '../../redux/selectors/uiSelectors';
+import { Link } from 'react-router-dom';
 
 export default function RegisterStepOne({ setStep, userData, handleInputChange }) {
   const dispatch = useDispatch();
@@ -108,7 +109,14 @@ export default function RegisterStepOne({ setStep, userData, handleInputChange }
               </button>
             </div>
 
-            <div className="text-center p-t-26 p-b-20">
+            <div className="p-2 mt-2 text-center p-t-15">
+              <span className="txt1">Have an account already? </span>
+                <Link to='/login' className="txt1" style={{fontWeight: 'bold'}} >
+                    Login
+                </Link>
+            </div>
+
+            <div className="text-center p-t-22 p-b-20">
               <span className="txt2">
                 or sign up using
               </span>
