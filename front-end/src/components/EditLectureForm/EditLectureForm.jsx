@@ -65,14 +65,14 @@ export default function EditLectureForm() {
       .finally(() => {
         dispatch(setLectureLoading(false));
       });
-  }, [dispatch, lectureId]);
+  }, [dispatch, lectureId, courseId, navigate]);
 
   useEffect(() => {
     if (editedSuccess) {
       navigate('/lectures');
       dispatch(resetLectureEdited());
     }
-  }, [editedSuccess]);
+  }, [editedSuccess, dispatch, navigate]);
 
   const handleSubmit = (lectureData) => {
     dispatch(editLecture(lectureId, lectureData));
