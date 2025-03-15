@@ -41,8 +41,9 @@ export default function Announcements() {
   };
 
   return (
-    <div>
-      <h1>Announcements</h1>
+    <div className="py-8">
+        <div className="container py-5">
+                <h1>Announcements</h1>
       {isLoading ? (
         <Loading />
       ) : announcements.size === 0 ? (
@@ -70,6 +71,7 @@ export default function Announcements() {
           )}
         </div>
       )}
+    </div>
     </div>
   );
 }
