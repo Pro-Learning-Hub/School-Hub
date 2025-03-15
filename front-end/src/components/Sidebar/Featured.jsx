@@ -4,7 +4,7 @@ import StudyWithMe from './StudyWithMe';
 
 export default function Featured() {
   return (
-    <details>
+    <details open>
       <summary className="text-sm font-semibold leading-6 text-gray-900">
         <Sparkles /> Featured
       </summary>
