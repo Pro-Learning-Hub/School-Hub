@@ -7,10 +7,11 @@ import {
 import Loading from '../utilityComponents/Loading';
 import { getCourseLectures } from '../../redux/actions/lecturesThunks';
 import { Link } from 'react-router-dom';
-import TempStyledLectureEntry from './TempStyledLectureEntry';
 import { selectCourseId } from '../../redux/selectors/uiSelectors';
 import { useJoinRoom } from '../../hooks/socketConnectionHooks';
 import useSyncSections from '../../hooks/syncSectionsHook';
+import SectionModal from './SectionModal';
+
 
 export default function Lectures() {
   const isLoading = useSelector(selectLecturesIsLoading);
@@ -117,58 +118,8 @@ export default function Lectures() {
           </div>
         </div>
       </div>
+      {showModal && <SectionModal handleCloseModal={handleCloseModal} selectedSection={selectedSection}/>}
 
-      {/* Modal Structure */}
-      <div
-        className={`modal fade ${showModal ? 'show' : ''}`}
-        tabIndex="-1"
-        aria-labelledby="courseModalLabel"
-        aria-hidden={!showModal}
-        style={{ display: showModal ? 'block' : 'none' }} // Modal visibility based on state
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="courseModalLabel">
-                Course Chapter Details
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-                onClick={handleCloseModal}
-              ></button>
-            </div>
-            <div className="modal-body">
-              <h2 className="p-2">{selectedSection?.title}</h2>
-              <p className="lead mb-2 p-2">
-                {selectedSection?.description ||
-                  'No description available for this chapter.'}
-              </p>
-
-              <div className="list-group">
-                {selectedSection?.lectures.map((lecture) => (
-                  <TempStyledLectureEntry
-                    lecture={lecture}
-                    sectionId={selectedSection.id}
-                    key={lecture.id}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={handleCloseModal}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
       {userRole && userRole !== 'student' && (
         <button
           style={{
