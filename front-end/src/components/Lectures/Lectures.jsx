@@ -50,7 +50,15 @@ export default function Lectures() {
             </p>
 
             {/* Search Field */}
-            <form className="d-flex mt-4 mb-5" role="search">
+            <form
+              className="d-flex mt-4 mb-5"
+              role="search"
+              // Temporarily
+              onSubmit={(e) => {
+                e.preventDefault();
+                e.target.elements[0].value = '';
+              }}
+            >
               <input
                 className="form-control me-2 p-3"
                 type="search"

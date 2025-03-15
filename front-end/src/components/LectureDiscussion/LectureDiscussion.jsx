@@ -45,7 +45,13 @@ export default function LectureDiscussion({ lectureId = '' }) {
       <h2 className="text-center">Lecture Discussion</h2>
 
       {/* Search Field */}
-      <form className="d-flex mt-4 mb-5" role="search">
+      <form
+        className="d-flex mt-4 mb-5"
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.target.elements[0].value = '';
+        }}>
         <input
           className="form-control me-2 p-3"
           type="search"
