@@ -70,7 +70,7 @@ export default function AnnouncementHeader({ content }) {
           </p>
         </div>
         {userRole !== 'student' && (
-          <>
+          <div style={{marginLeft: 'auto'}}>
             <button
               type="button"
               className="btn btn-light mt-2"
@@ -103,7 +103,7 @@ export default function AnnouncementHeader({ content }) {
                 </ul>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
       <div className="mt-2 p-3">
