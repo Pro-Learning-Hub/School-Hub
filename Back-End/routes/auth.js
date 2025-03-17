@@ -9,9 +9,9 @@ const { verifyToken } = require('../middlewares/authMiddlewares');
 const { isUserEnroledInCourse } = require('../helperFunctions');
 
 const imagekit = new ImageKit({
-  publicKey: 'public_tTc9vCi5O7L8WVAQquK6vQWNx08=',
-  privateKey: 'private_edl1a45K3hzSaAhroLRPpspVRqM=',
-  urlEndpoint: 'https://ik.imagekit.io/loayalsaid1/proLearningHub',
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint: process.env.IMAGEKIT_ENDPOINT,
 });
 
 router.get('/imagekit', (req, res) => {

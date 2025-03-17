@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 
-export default function StudyWithMe() {
+export default function StudyWithMe({ iconStyles }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div style={{cursor: 'pointer'}}>
       <span onClick={() => setIsOpen(true)}>
         <img
-          width="64"
-          height="64"
           src="https://img.icons8.com/external-flaticons-lineal-color-flat-icons/64/external-technique-productivity-flaticons-lineal-color-flat-icons.png"
           alt="external-technique-productivity-flaticons-lineal-color-flat-icons"
+          style={iconStyles}
         />
         Study with me
       </span>
