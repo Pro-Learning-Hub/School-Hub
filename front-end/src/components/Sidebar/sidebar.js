@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { googleLogout } from '@react-oauth/google';
 import { logout } from '../../redux/actions/uiActionCreators';
 import Communities from './Communities';
@@ -17,6 +17,7 @@ import './sidebar.css';
 export default function Sidebar() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const dispatch = useDispatch();
+	const isLoggedIn = useSelector(state => state.ui.get('isLoggedIn'));
 
   const handleLogout = () => {
     dispatch(logout());
@@ -48,15 +49,17 @@ export default function Sidebar() {
     <nav className="navbar navbar-dark bgd-style fixed-top position-relative">
       <div className="container-fluid">
         {/* Hamburger Button */}
-        <button
-          className="navbar-toggler me-auto"
-          type="button"
-          onClick={toggleSidebar}
-          aria-controls="offcanvasDarkNavbar"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        {isLoggedIn && 
+          <button
+            className="navbar-toggler me-auto"
+            type="button"
+            onClick={toggleSidebar}
+            aria-controls="offcanvasDarkNavbar"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+        }
 
         {/* Title moved to the right */}
         <Link className="navbar-brand ms-auto" to="/">
