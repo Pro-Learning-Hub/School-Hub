@@ -53,7 +53,7 @@ router.get('/courses/:id/announcements', verifyToken, async(req, res) => {
 
     let results = [];
     for (const announcement of announcements) {
-      const user = getUserData(announcement.userId);
+      const user = await getUserData(announcement.userId);
       delete announcement.userId;
       // I'm going to leave createdAt there.. may be will be shown
       // besides the updatedAt
