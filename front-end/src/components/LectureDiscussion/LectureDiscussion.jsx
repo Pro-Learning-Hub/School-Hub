@@ -41,12 +41,12 @@ export default function LectureDiscussion({ lectureId = '' }) {
   };
 
   return (
-    <div className="container my-4">
+    <div className="container my-5">
       <h2 className="text-center">Lecture Discussion</h2>
 
       {/* Search Field */}
       <form
-        className="d-flex mt-4 mb-5"
+        className="d-flex mt-3 mb-3"
         role="search"
         onSubmit={(e) => {
           e.preventDefault();
