@@ -60,7 +60,9 @@ export default function Lecture() {
           <div className="row justify-content-end">
             <div className="col-lg-9 col-md-8 mb-4">
               <h1 className="text-primary mb-1 mt-5">{lectureData.get('title')}</h1>
-              <p className="text-secondary mb-4 fs-5 lh-base">{lectureData.get('description')}</p>
+              <p className="text-secondary mb-4" style={{ fontSize: '1rem',lineHeight: 1.3}}>
+                {lectureData.get('description')}
+              </p>
 
               {/* YouTube Video */}
               <div className="embed-responsive embed-responsive-16by9 mb-4">
