@@ -94,7 +94,7 @@ router.get('/questions/:id/replies', verifyToken, async (req, res) => {
     FROM replies
     WHERE questionId = ?
       ${lastFetched ? 'AND createdAt > ?' : ''}
-    ORDER BY updatedAt DESC`,
+    ORDER BY upvotes DESC`,
     params
   );
 
