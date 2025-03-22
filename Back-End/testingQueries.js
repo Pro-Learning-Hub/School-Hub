@@ -121,7 +121,7 @@ async function addLectureQuestions() {
     }
   }
 }
-addLectureQuestions();
+// addLectureQuestions();
 
 
 async function insertLecturesWithDelay() {
