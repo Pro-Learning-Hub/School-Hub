@@ -45,8 +45,7 @@ export default function Lectures() {
           <div className="row mb-8 justify-content-center">
             <h1 className="text-center mb-4 fs-1 fw-bold mt-5">Lectures</h1>
             <p className="text-center mb-5 fs-4">
-              Browse through the course lectures organized by time, chapters, or
-              topic. Find everything you need to enhance your learning
+              Find everything you need to enhance your learning
               experience.
             </p>
 
