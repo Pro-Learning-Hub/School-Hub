@@ -55,7 +55,7 @@ router.get('/courses/:id/general_discussion', verifyToken, async (req, res) => {
       FROM questions 
       WHERE courseId = ?
       ${lastFetched ? 'AND createdAt > ?' : ''}
-      ORDER BY updatedAt DESC;
+      ORDER BY upvotes DESC;
     `, [...params]);
   const newLastFetched = getCurrentTimeInDBFormat();
 
@@ -91,7 +91,7 @@ router.get('/lectures/:id/discussion', verifyToken, async (req, res) => {
         FROM questions 
         WHERE lectureId = ?
         ${lastFetched ? 'AND createdAt > ?' : ''}
-        ORDER BY updatedAt DESC;`,
+        ORDER BY upvotes DESC;`,
       [id].concat(lastFetched ? [lastFetched] : [])
     );
     const newLastFetchedTime = getCurrentTimeInDBFormat();
