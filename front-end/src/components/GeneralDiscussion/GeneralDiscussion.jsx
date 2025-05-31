@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../utilityComponents/Loading';
-import SearchField from '../sharedComponents/SearchField';
 import DiscussionEntryEditor from '../DiscussionEntries/DiscussionEntryEditor';
 import DiscussionEntries from '../DiscussionEntries/DiscussionEntries';
 import { addGeneralDiscussionEntry, getGeneralDiscussion } from '../../redux/actions/discussionsThunks';
@@ -43,7 +42,13 @@ export default function LectureDiscussion() {
     <div className='container line-spacing'>
       <h2 className='text-center h3'>General Discussion</h2>
 			<p className='txt2 p-2 fs-5'>Course Discussion Forum</p>
-      <form className="d-flex mt-4 mb-5" role="search">
+      <form 
+        className="d-flex mt-4 mb-5"
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.target.elements[0].value = '';
+        }}>
         <input
           className="form-control me-2 p-3"
           type="search"

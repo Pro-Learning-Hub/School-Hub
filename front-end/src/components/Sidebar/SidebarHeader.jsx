@@ -10,8 +10,11 @@ export default function SidebarHeader({ toggleSidebar }) {
 					This is something we are not sattled on yet..
 			*/}
       <div className="offcanvas-header">
-        {/* Course logo or platform logo, I dont'know  */}
-        <img src="https://picsum.photos/100" alt="Course Logo" />
+        <img
+          src="https://external-preview.redd.it/gkybTnH7Hw3y0wYt-5q7zH-hdh24Y6F4mA03JWQ_mx4.jpg?auto=webp&s=a9a0afd2b0e59767765f84d72b02909a5853acd9"
+          alt="Course Logo"
+          style={{ width: '10rem', marginRight: '1rem'}}
+        />
         <h5 className="offcanvas-title" id="offcanvasDarkNavbarLabel">
           Test Course
         </h5>
@@ -23,7 +26,7 @@ export default function SidebarHeader({ toggleSidebar }) {
           aria-label="Close"
         ></button>
       </div>
-      <p className="text-white">
+      <p className="text-white mx-3">
         <a
           target="_blank"
           rel="noreferrer"
@@ -34,7 +37,7 @@ export default function SidebarHeader({ toggleSidebar }) {
         <br />
         <a href="mailto:malan@harvard.edu">malan@harvard.edu</a>
         <br />
-        <span className="mx-2">
+        <span>
           <a
             target="_blank"
             rel="noreferrer"

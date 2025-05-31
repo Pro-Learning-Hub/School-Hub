@@ -9,9 +9,9 @@ const { verifyToken } = require('../middlewares/authMiddlewares');
 const { isUserEnroledInCourse } = require('../helperFunctions');
 
 const imagekit = new ImageKit({
-  publicKey: 'public_tTc9vCi5O7L8WVAQquK6vQWNx08=',
-  privateKey: 'private_edl1a45K3hzSaAhroLRPpspVRqM=',
-  urlEndpoint: 'https://ik.imagekit.io/loayalsaid1/proLearningHub',
+  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint: process.env.IMAGEKIT_ENDPOINT,
 });
 
 router.get('/imagekit', (req, res) => {
@@ -224,6 +224,7 @@ router.post('/oauth/googleRegister', async (req, res) => {
         user: {
           id: userId,
           email: userData.email,
+          role: 'student',
           firstName: userData.firstName,
           lastName: userData.given_name,
           username: userData.family_name,
@@ -359,34 +360,52 @@ router.post('/admin/login', async (req, res) => {
   });
 });
 
-router.post('/admin/OAuth/google', (req, res) => {
-  // I have one simple question ❓❔❓❔❓❔❓❔❓❔❓
-  // How on earth i just moved on without checking if the user
-  // Exists in the database or not.. 
-  // I really have no idea...
-  // TODO: Fix this stupid bug..
-  const idToken = req.body.token;
+router.post('/admin/oauth/google', async (req, res) => {
+  const {token: idToken, courseId} = req.body;
   const googleVerifyUrl = `https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`;
-  fetch(googleVerifyUrl)
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.email_verified) {
-        res.send({
-          message: 'Logged in successfully',
-          user: {
-            email: data.email,
-            id: data.sub,
-            role: 'admin',
-          },
-        });
-      } else {
-        res.status(401).send({ message: 'Email not verified' });
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).send({ message: 'Internal Server Error' });
+
+  try {
+    const response = await fetch(googleVerifyUrl);
+    const data = await response.json();
+    if (!data.email_verified) {
+      return res.status(401).send({ message: 'Email not verified' });
+    }
+
+    const [user] = await db.execute('SELECT * FROM users WHERE email = ?', [data.email]);
+    if (!user) {
+      return res.status(401).send({ message: 'User not found' });
+    }
+
+    const [enrollment] = await db.execute(
+      'SELECT * FROM courseAdmins WHERE userId = ? AND courseId = ?',
+      [user.id, courseId]
+    );
+    if (!enrollment) {
+      return res.status(403).send({ message: 'User is not a course admin' });
+    }
+
+    const accessToken = jwt.sign(
+      { userId: user.id, courseId, role: 'admin' },
+      process.env.TOKEN_SECRET_KEY
+    );
+
+    res.send({
+      message: 'Logged in successfully',
+      accessToken,
+      user: {
+        email: user.email,
+        id: user.id,
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        pictureThumbnail: user.pictureThumbnail,
+        pictureUrl: user.pictureUrl,
+      },
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Internal Server Error' });
+  }
 });
 
 router.post('/api/logout', verifyToken, (req, res) => {

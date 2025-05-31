@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../utilityComponents/Loading';
-import SearchField from '../sharedComponents/SearchField';
 import './css/discussion.css';
 import DiscussionEntryEditor from '../DiscussionEntries/DiscussionEntryEditor';
 import DiscussionEntries from '../DiscussionEntries/DiscussionEntries';
@@ -15,6 +14,7 @@ import {
 } from '../../redux/selectors/DiscussionsSelectors';
 import useSyncLectureDiscussions from '../../hooks/syncLecturesDiscussionsHook';
 import { useJoinRoom } from '../../hooks/socketConnectionHooks';
+
 
 export default function LectureDiscussion({ lectureId = '' }) {
   const [askNewQuestion, setAskNewQuestion] = useState(false);
@@ -41,11 +41,17 @@ export default function LectureDiscussion({ lectureId = '' }) {
   };
 
   return (
-    <div className="container my-4">
+    <div className="container my-5">
       <h2 className="text-center">Lecture Discussion</h2>
 
       {/* Search Field */}
-      <form className="d-flex mt-4 mb-5" role="search">
+      <form
+        className="d-flex mt-3 mb-3"
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.target.elements[0].value = '';
+        }}>
         <input
           className="form-control me-2 p-3"
           type="search"

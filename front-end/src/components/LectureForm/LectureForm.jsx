@@ -68,7 +68,7 @@ export default function LectureForm({ onSubmit, lectureData = {} }) {
         console.error(err);
         toast.error(`Error getting sections: ${err.message}`);
       });
-  }, [dispatch]);
+  }, [dispatch, courseId]);
 
   const createNewSection = () => {
     if (newSection) {

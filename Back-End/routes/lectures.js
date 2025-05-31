@@ -69,7 +69,7 @@ router.get('/courses/:id/lectures', verifyToken, async (req, res) => {
     for (const section of sections) {
       const sectionLectures = await db.execute(
         `SELECT ${lectureFields} FROM lectures WHERE sectionId = ? 
-        ${lastFetched ? 'AND createdAt > ?' : ''}`,
+        ${lastFetched ? 'AND createdAt > ?' : ''} ORDER BY createdAt`,
         [section.id, ...(lastFetched ? [lastFetched] : [])],
       )
       lectures.push({...section, lectures: sectionLectures});
@@ -136,7 +136,7 @@ router.get(
 
     const getResource = async (lectureId, type) => {
       return await db.execute(
-          'SELECT title, url FROM lectureResources WHERE lectureId = ? AND type = ?',
+          'SELECT title, url FROM lectureResources WHERE lectureId = ? AND type = ? ORDER BY createdAt',
           [lectureId, type]
       );
     };

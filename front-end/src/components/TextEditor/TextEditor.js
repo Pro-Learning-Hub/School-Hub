@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useCallback } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import 'react-quill/dist/quill.bubble.css';
@@ -22,7 +22,7 @@ export default function TextEditor({
   const quillRef = useRef(null);
 
   // Define the image handler function
-  const handleImage = () => {
+  const handleImage = useCallback(() => {
     const input = document.createElement('input');
     const quill = quillRef.current.getEditor();
 
@@ -43,7 +43,7 @@ export default function TextEditor({
         }
       }
     };
-  };
+  }, [setFiles]);
 
   // Memoize the modules configuration
   const modules = useMemo(
@@ -55,7 +55,7 @@ export default function TextEditor({
         },
       },
     }),
-    []
+    [handleImage]
   );
 
   return (

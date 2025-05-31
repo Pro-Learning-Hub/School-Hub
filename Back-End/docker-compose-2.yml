@@ -1,0 +1,57 @@
+services:
+  db:
+    image: mysql:8.4.0-oraclelinux8
+    container_name: mysql-test
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - mysql-test-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - TZ=UTC
+    command: --port=${DB_PORT} --log-bin-trust-function-creators=1
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-P", "${DB_PORT}", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - backend-network
+
+  backend:
+    # build: .
+    image: loayalsaid1/prolearninghub:${BACKEND_IMAGE_TAG-latest}
+    container_name: backend-test
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - TOKEN_SECRET_KEY=${TOKEN_SECRET_KEY}
+      - IMAGEKIT_PRIVATE_KEY=${IMAGEKIT_PRIVATE_KEY}
+      - IMAGEKIT_PUBLIC_KEY=${IMAGEKIT_PUBLIC_KEY}
+      - IMAGEKIT_ENDPOINT=${IMAGEKIT_ENDPOINT}
+      - DB_HOST=db
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - USE_HTTPS=${USE_HTTPS}
+      - DB_PORT=${DB_PORT}
+      - VIRTUAL_HOST=prolearninghubtest.loay.me
+      - LETSENCRYPT_HOST=prolearninghubtest.loay.me
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - nginx-proxy
+      - backend-network
+
+volumes:
+  mysql-test-data:
+networks:
+  backend-network:
+  nginx-proxy:
+    external: true

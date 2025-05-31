@@ -1,5 +1,11 @@
 .bgd-style{
-    background-color: #6657DF !important;
+    background-color: #607D8B  !important;
     color: #ffffff;
 }
 
+.navbar a {
+    color: #eee;
+}
+.navbar a:hover {
+    color: #212121;
+}

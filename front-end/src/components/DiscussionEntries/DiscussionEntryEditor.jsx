@@ -8,6 +8,7 @@ import {
   toggleLoading,
 } from '../../redux/actions/uiActionCreators';
 import './css/discussionentry.css';
+import { DOMAIN } from '../../utils/constants';
 
 const imagekit = new ImageKit({
   publicKey: 'public_tTc9vCi5O7L8WVAQquK6vQWNx08=',
@@ -28,7 +29,7 @@ export default function DiscussionEntryEditor({
     for (const { file, fileUrl } of files) {
       try {
         const authParamsResponse = await fetch(
-          'http://localhost:3000/auth/imagekit'
+          `${DOMAIN}/auth/imagekit`
         );
         if (!authParamsResponse.ok) {
           throw new Error('Failed to fetch authentication parameters');
