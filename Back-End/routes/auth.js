@@ -224,6 +224,7 @@ router.post('/oauth/googleRegister', async (req, res) => {
         user: {
           id: userId,
           email: userData.email,
+          role: 'student',
           firstName: userData.firstName,
           lastName: userData.given_name,
           username: userData.family_name,
