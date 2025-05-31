@@ -2,7 +2,7 @@ services:
   db:
     image: mysql:8.4.0-oraclelinux8
     container_name: mysql-prod
-  ports:
+    ports:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
       - mysql-prod-data:/var/lib/mysql
@@ -28,7 +28,7 @@ services:
     container_name: backend-prod
     restart: always
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       - TOKEN_SECRET_KEY=${TOKEN_SECRET_KEY}
       - IMAGEKIT_PRIVATE_KEY=${IMAGEKIT_PRIVATE_KEY}
