@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import fs from 'fs'
+import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -7,7 +9,11 @@ export default defineConfig({
   server: {
     port: 3001,
     open: false,
-    host: true
+    host: true,
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, 'key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'cert.pem'))
+    }
   },
   build: {
     outDir: 'dist',
@@ -16,7 +22,6 @@ export default defineConfig({
   define: {
     global: 'globalThis',
 	},
-  // Handle environment variables
   envPrefix: 'VITE_',
   // Configure esbuild to handle JSX in .js files
   esbuild: {
