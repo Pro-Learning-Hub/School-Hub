@@ -1,1 +1,1 @@
-export const DOMAIN = process.env.REACT_APP_BACKEND_DOMAIN;
+export const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;

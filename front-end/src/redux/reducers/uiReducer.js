@@ -6,7 +6,7 @@ export const initialState = fromJS({
   isLoggedIn: false,
   isSocketReady: false,
   course: {
-    id: process.env.REACT_APP_COURSE_ID,
+    id: import.meta.env.VITE_COURSE_ID,
   },
   user: {},
   // Save different error messages for different error types
