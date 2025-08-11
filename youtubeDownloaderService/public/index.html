@@ -47,7 +47,7 @@
 
           // trigger streaming download
           const link = document.createElement('a');
-          link.href = `/proxy?url=${encodeURIComponent(url)}&isAudioOnly=${type === "mp3"}`;
+          link.href = `/download?url=${encodeURIComponent(url)}&isAudioOnly=${type === "mp3"}`;
           link.download = info.filename || (type === 'mp3' ? 'audio.mp3' : 'video.mp4');
           document.body.appendChild(link);
           link.click();
