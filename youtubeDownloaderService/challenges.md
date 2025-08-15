@@ -1,7 +1,7 @@
 # Youtube Downloader Challenges
 Challenges I faced starting from the idea untill making a fully functional, performant robust public api for youtube downloading
 
-## Just a list of bullshit
+## Just a list of braindump points.. 
 ### howto download a youtube video  youtube api is giving us hell
 	- library or a binary actually to downlaod a file and you call it via Child-proccess, with execFile or spawn depending on situation..explained below.. 
 ###  I want fast response can't download locally then pass to user
@@ -46,3 +46,24 @@ so what?.. web sockets is the key here ..
 with that.. we are good.. 
 i guess... 
 or at least, i hope so.. 
+
+
+
+## Ooops, there is more
+### over a night time youtube all the MP3 downloading that was  working yesterday.. is not working, youtube is enforcing this thing, SABR protocol, and when your mind goes banana debugging what the heck is wrong, it was working yesterday.. you get crazier when you now that it sometimes work, and some other times not, which can heppen withen 3 minutes
+which gives you 2 options. worse that each other with a third choice that is not in the middle, but still bad. and both will mean no streaming, you have to download locally then stream the file to user
+
+1. download an mp4 you know will work, then extract the audio stream to an mp3 then pass to user, which can take ages and still you need to wait tell the end then respond to user expectially if it's a long video.. (download mp4, then take time to extract audio from it)
+2. ignore it and just let, metaphorically speaking, the luck of the user decides if the mp3 stream will work or not and it will fail almost most of the times.. or not on other times
+
+#### my solution
+- Remodularize the code to allow for retry logic which emans.. you try first one to donwlaod audio stream,.. it it fails.. you don't respond to  user, but rather retury and this time, use teh second method of downloaidn mp4 then extracitng audio to a file then stream it to  uesr
+
+
+## One last thing.. Canceling a requestion when using a porxy endpoing (i.e, my backend is using the downloader) will not fire abort request in the app.. which means.. queued requests will keep stale & no cleanup will work
+- use an abortController in the proxy endpoint.. & pass the controller.signal to the fetch() then add in the proxy, req.on('aborted', () => controller.abort()) so that an abort in the proxy fires up an abort in the downlsoer
+
+I would also add that i may rely on the close event for that, that that might work for that case when a connection closees, but not neccessary on delibrate abort, so, that needs to be searched
+
+## also this leaves you with another problem.. what if the proxy doesn't do that.. 
+- simply for that matter, I wont' care about this now, because thisi s not a public api.. that work as a package and you deploy it yourself and handle that.. and for the app itself,, the frontned is well configured with the backend anyway .. I want to sleep so i'm not sure if what i'm saying makes any sense now..
