@@ -7,6 +7,7 @@ import LectureDiscussion from '../LectureDiscussion/LectureDiscussion';
 import { useParams } from 'react-router-dom';
 import { useJoinRoom } from '../../hooks/socketConnectionHooks';
 import useSyncLectureEntry from '../../hooks/syncLectureEntryHook';
+import DownloadLink from './DownloadLink';
 
 export default function Lecture() {
   const { lectureId } = useParams();
@@ -79,7 +80,9 @@ export default function Lecture() {
                 <summary className="h5">Lecture Resources</summary>
                 <ul className="list-group list-group-flush">
                   <li className="list-group-item">
-                    <a href={lectureData.get('audioLink')} target="_blank" rel="noopener noreferrer">Audio</a>
+                    <DownloadLink videoUrl={lectureData.get('videoLink')} mediaType="audio">
+                      Audio
+                    </DownloadLink>
                   </li>
                   <li className="list-group-item">
                     <a href={lectureData.get('notes')} target="_blank" rel="noopener noreferrer">Notes</a>
@@ -87,19 +90,36 @@ export default function Lecture() {
                   <li className="list-group-item">
                     <a href={lectureData.get('slides')} target="_blank" rel="noopener noreferrer">Slides</a>
                   </li>
-                  <details>
-                    <summary className="list-group-item">Demos</summary>
-                    {getDemos().length ? (
-                      <ul className="ps-4 list-group-item">{getDemos()}</ul>
-                    ) : (
-                      <p className="text-muted">No Demos available</p>
-                    )}
-                  </details>
+                  <li>
+                    <details>
+                      <summary className="list-group-item">Demos</summary>
+                      {getDemos().length ? (
+                        <ul className="ps-4 list-group-item">{getDemos()}</ul>
+                      ) : (
+                        <p className="text-muted">No Demos available</p>
+                      )}
+                    </details>
+                  </li>
                   <li className="list-group-item">
                     <a href={lectureData.get('transcript')} target="_blank" rel="noopener noreferrer">Transcript</a>
                   </li>
                   <li className="list-group-item">
                     <a href={lectureData.get('subtitles')} target="_blank" rel="noopener noreferrer">Subtitles</a>
+                  </li>
+                  <li>
+                    <details>
+                      <summary className="list-group-item">Video</summary>
+                      <ul>
+                        <li>
+                          <DownloadLink videoUrl={lectureData.get('videoLink')} mediaType="video">
+                            Video [MP4]
+                          </DownloadLink>
+                        </li>
+                        <li>
+                          <a href={lectureData.get('videoLink')}>Youtube</a>
+                        </li>
+                      </ul>
+                    </details>
                   </li>
                 </ul>
               </details>
