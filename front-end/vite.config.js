@@ -25,7 +25,7 @@ export default defineConfig({
   envPrefix: 'VITE_',
   // Configure esbuild to handle JSX in .js files
   esbuild: {
-    loader: 'jsx',
+    loader: 'tsx',
     include: /src\/.*\.[jt]sx?$/,
     exclude: []
   },
@@ -33,6 +33,8 @@ export default defineConfig({
     esbuildOptions: {
       loader: {
         '.js': 'jsx',
+        '.ts': 'tsx',
+        '.tsx': 'tsx',
       },
     },
   }

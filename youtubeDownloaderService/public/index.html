@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube Downloader</title>
+  <style>
+    #loading { display: none; color: green; font-weight: bold; }
+    #infoBox { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>YouTube Video Downloader</h2>
+  <input id="url" type="text" placeholder="Enter YouTube URL" size="50" />
+  <select id="type">
+    <option value="mp4">MP4 (video)</option>
+    <option value="mp3">MP3 (audio)</option>
+  </select>
+  <button id="downloadBtn">Download</button>
+  <div id="loading">🔄 Preparing download...</div>
+  <div id="infoBox"></div>
+
+  <script>
+    const btn = document.getElementById('downloadBtn');
+    const urlInput = document.getElementById('url');
+    const typeSelect = document.getElementById('type');
+    const loading = document.getElementById('loading');
+    const infoBox = document.getElementById('infoBox');
+
+    function formatDuration(s) { const m = Math.floor(s/60), sec = s%60; return `${m}:${sec.toString().padStart(2,'0')}`; }
+    function formatSize(b) { return b ? `${(b/1024/1024).toFixed(1)} MB` : 'Unknown'; }
+
+    btn.addEventListener('click', () => {
+      const url = urlInput.value.trim();
+      const type = typeSelect.value;
+      if (!url) return alert('Enter URL');
+
+      loading.style.display = 'block';
+      infoBox.innerHTML = '';
+
+      fetch(`/info?url=${encodeURIComponent(url)}`)
+        .then(r => r.json())
+        .then(info => {
+          infoBox.innerHTML = `
+            <p><strong>Title:</strong> ${info.title}</p>
+          `;
+
+          // trigger streaming download
+          const link = document.createElement('a');
+          link.href = `/proxy?url=${encodeURIComponent(url)}&isAudioOnly=${type === "mp3"}`;
+          link.download = info.filename || (type === 'mp3' ? 'audio.mp3' : 'video.mp4');
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          loading.style.display = 'none';
+        })
+        .catch(() => {
+          loading.style.display = 'none';
+          infoBox.textContent = 'Error retrieving info.';
+        });
+    });
+  </script>
+</body>
+</html>
