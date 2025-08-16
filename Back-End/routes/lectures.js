@@ -1,15 +1,6 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const {
-  mockComments,
-  mockAnnouncements,
-  mockReplies,
-  question,
-  mockDiscussion,
-
-  mockSections,
-  repliesList,
-} = require('../mockData');
+const { Readable } = require("stream");
 const db = require('../connect');
 const { verifyToken } = require('../middlewares/authMiddlewares');
 const { verify } = require('jsonwebtoken');
@@ -18,7 +9,9 @@ const {
   isUserEnroledInCourse,
   getCurrentTimeInDBFormat,
 } = require('../helperFunctions');
+
 const router = express.Router();
+
 
 // Get all lectures for a course split on sections
 // Here nothing much to be done regardig the token
@@ -523,5 +516,52 @@ router.post('/courses/:id/lectures/diff', async (req, res) => {
     res.status(500).send({ message: 'Internal server error', error });
   }
 });
+
+router.get('/lectures/media', async (req, res) => {
+  const { url, type } = req.query;
+  if (!url) return res.status(400).send("Missing ?url=");
+  if (!type) return res.status(400).send("Missing ?type=");
+
+  const isAudioOnly = req.query.type === 'audio';
+  
+  const controller = new AbortController();
+  const { signal } = controller;
+
+  const timeout = 1000 * 60 * 10; // 10 minutes for mp3 
+
+  req.timeout = timeout;
+  try {
+    const downloadResponse = await fetch(
+      `${process.env.YT_DOWNLOAD_SERVICE_URL}/download?url=${encodeURIComponent(url)}&isAudioOnly=${isAudioOnly}`,
+      { timeout, signal }
+    );
+
+    res.setHeader('Content-Type', downloadResponse.headers.get('Content-Type'));
+    res.setHeader('Content-Disposition', downloadResponse.headers.get('Content-Disposition'));
+
+    const stream = Readable.fromWeb(downloadResponse.body);
+
+    stream.on('error', (err) => {
+      if (err.name === 'AbortError') {
+        console.log("Stream aborted");
+      } else {
+        console.error("Stream error:", err);
+      }
+      res.destroy(err); // end the client response too
+    });
+
+    // Pipe data to client
+    stream.pipe(res);
+
+
+    req.on("aborted", () => {
+      console.log("/proxy =>  Request aborted");
+      controller.abort();
+    });
+  } catch (err) {
+    console.error("DownloadHandler Error:", err);
+    res.status(500).send("Something went wrong");
+  }
+})
 
 module.exports = router;
