@@ -8,10 +8,9 @@ interface DownloadLinkProps {
 }
 
 const DownloadLink: React.FC<DownloadLinkProps> = ({ videoUrl, mediaType, children }) => {
-	const linkRef = useRef<HTMLAnchorElement | null>(null);
 	const [showMessage, setShowMessage] = useState<boolean>(false);
 
-	const onClickHandler = (e: MouseEvent) => {
+	const onClickHandler = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
 		e.preventDefault();
 		setShowMessage(true);
 		const downloadUrl = `${DOMAIN}/lectures/media?type=${mediaType}&url=${encodeURIComponent(videoUrl)}`;
@@ -26,17 +25,6 @@ const DownloadLink: React.FC<DownloadLinkProps> = ({ videoUrl, mediaType, childr
 		setTimeout(() => iframe.remove(), 600_000);
 	}
 
-	useEffect(() => {
-		if (linkRef.current) {
-			linkRef.current.addEventListener('click', onClickHandler);
-		}
-		return () => {
-			if (linkRef.current) {
-				linkRef.current.removeEventListener('click', onClickHandler);
-			}
-		}
-	}, [videoUrl, mediaType]);
-
 	// remove the message after 5 seconsds
 	useEffect(() => {
 		if (showMessage) {
@@ -49,7 +37,7 @@ const DownloadLink: React.FC<DownloadLinkProps> = ({ videoUrl, mediaType, childr
 	
 	return (
 		<>
-			<a href="#" ref={linkRef}>
+			<a href="#" onClick={onClickHandler}>
 				{children ? children : (mediaType === 'video' ? 'Video' : 'Audio')}
 			</a>
 			{showMessage && <p>Download Request's been queued, Download should start soon...</p>}
