@@ -1,4 +1,4 @@
-const { spawn, execFileSync, execFile } = require("child_process");
+const { execFile } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 const { PassThrough } = require("stream");
@@ -250,7 +250,7 @@ class YouTubeDownloadService {
   async handleMp4Download(downloadContext, pass, req, res) {
     const { url, tmpPath, key, type, videoId, videoTitle, filePath } = downloadContext;
     
-    const streamUrl = this.getMp4StreamUrl(url);
+    const streamUrl = await this.getMp4StreamUrl(url);
     const response = await fetch(streamUrl);
     if (!response.ok) throw new Error("Failed to fetch stream");
 
@@ -308,19 +308,27 @@ class YouTubeDownloadService {
     this.processNextInQueue();
   }
 
-  getMp4StreamUrl(videoUrl) {
-    const stdout = execFileSync("yt-dlp", [
-      videoUrl,
-      "-f", "best[ext=mp4]",
-      "--get-url",
-      "--no-playlist",
-      "--cookies", this.cookiesPath
-    ], { encoding: "utf8" });
+  async getMp4StreamUrl(videoUrl) {
+    return new Promise((resolve, reject) => {
+      execFile("yt-dlp", [
+        videoUrl,
+        "-f", "best[ext=mp4]",
+        "--get-url",
+        "--no-playlist",
+        "--cookies", this.cookiesPath
+      ], { encoding: "utf8" }, (error, stdout) => {
+        if (error) {
+          return reject(error);
+        }
 
-    const url = stdout.trim().split("\n")[0];
-    if (!url) throw new Error("No stream URL found");
+        const url = stdout.trim().split("\n")[0];
+        if (!url) {
+          return reject(new Error("No stream URL found"));
+        }
 
-    return url;
+        resolve(url);
+      });
+    });
   }
 
   static parseVideoId(url) {
