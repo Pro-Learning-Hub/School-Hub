@@ -17,8 +17,19 @@
     <option value="mp3">MP3 (audio)</option>
   </select>
   <button id="downloadBtn">Download</button>
+
   <div id="loading">🔄 Preparing download...</div>
   <div id="infoBox"></div>
+
+  <hr>
+  <h3>Get Video Transcription or Subtitles</h3>
+  <input id="transcriptUrl" type="text" placeholder="Enter YouTube URL" size="50" />
+  <select id="transcriptFormat">
+    <option value="txt">Transcription (txt)</option>
+    <option value="srt">Subtitles (srt)</option>
+  </select>
+  <button id="transcriptBtn">Get Transcript/Subtitles</button>
+  <div id="transcriptStatus"></div>
 
   <script>
     const btn = document.getElementById('downloadBtn');
@@ -58,6 +69,41 @@
           loading.style.display = 'none';
           infoBox.textContent = 'Error retrieving info.';
         });
+    });
+
+    // Transcription section logic
+    const transcriptBtn = document.getElementById('transcriptBtn');
+    const transcriptUrl = document.getElementById('transcriptUrl');
+    const transcriptFormat = document.getElementById('transcriptFormat');
+    const transcriptStatus = document.getElementById('transcriptStatus');
+
+    transcriptBtn.addEventListener('click', async () => {
+      const url = transcriptUrl.value.trim();
+      const format = transcriptFormat.value;
+      transcriptStatus.textContent = '';
+      if (!url) return alert('Enter YouTube URL for transcription');
+
+      transcriptStatus.textContent = '🔄 Fetching...';
+      try {
+        const response = await fetch(`/transcript?url=${encodeURIComponent(url)}&format=${format}`);
+        if (!response.ok) throw new Error('Failed to fetch transcript');
+        else {
+
+        const blob = await response.blob();
+        const downloadUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = format === 'srt' ? 'subtitles.srt' : 'transcript.txt';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(downloadUrl);
+        transcriptStatus.textContent = '✅ Download started!';
+        }
+
+      } catch (e) {
+        transcriptStatus.textContent = '❌ Error fetching transcript.';
+      }
     });
   </script>
 </body>
