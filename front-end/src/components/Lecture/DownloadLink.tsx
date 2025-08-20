@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { DOMAIN } from '../../utils/constants';
+import { toast } from 'react-hot-toast';
+
 
 interface DownloadLinkProps {
   videoUrl: string;
@@ -8,11 +10,14 @@ interface DownloadLinkProps {
 }
 
 const DownloadLink: React.FC<DownloadLinkProps> = ({ videoUrl, mediaType, children }) => {
-	const [showMessage, setShowMessage] = useState<boolean>(false);
 
 	const onClickHandler = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
 		e.preventDefault();
-		setShowMessage(true);
+		
+		toast.loading(`Preparing ${mediaType}... Download should start soon.`, {
+			duration: 5_000,
+		})
+		
 		const downloadUrl = `${DOMAIN}/lectures/media?type=${mediaType}&url=${encodeURIComponent(videoUrl)}`;
 
 		const iframe = document.createElement("iframe");
@@ -25,22 +30,11 @@ const DownloadLink: React.FC<DownloadLinkProps> = ({ videoUrl, mediaType, childr
 		setTimeout(() => iframe.remove(), 600_000);
 	}
 
-	// remove the message after 5 seconsds
-	useEffect(() => {
-		if (showMessage) {
-			const timer = setTimeout(() => {
-				setShowMessage(false);
-			}, 60_000);
-			return () => clearTimeout(timer);
-		}
-	}, [showMessage]);
-	
 	return (
 		<>
 			<a href="#" onClick={onClickHandler}>
 				{children ? children : (mediaType === 'video' ? 'Video' : 'Audio')}
 			</a>
-			{showMessage && <p>Download Request's been queued, Download should start soon...</p>}
 		</>
 	)
 
