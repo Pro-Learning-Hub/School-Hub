@@ -564,4 +564,26 @@ router.get('/lectures/media', async (req, res) => {
   }
 })
 
+router.get('/lectures/transcript', async (req, res) => {
+  const { url, format } = req.query;
+  if (!url) return res.status(400).send("Missing ?url=");
+
+  try {
+    const transcriptResponse = await fetch(
+      `${process.env.YT_DOWNLOAD_SERVICE_URL}/transcript?url=${encodeURIComponent(url)}&format=${encodeURIComponent(format)}`,
+    );
+
+    if (!transcriptResponse.ok) {
+      throw new Error("Failed to fetch transcript");
+    }
+
+    res.setHeader('Content-Type', transcriptResponse.headers.get('Content-Type'));
+    Readable.fromWeb(transcriptResponse.body).pipe(res);
+
+  } catch (err) {
+    console.error("TranscriptHandler Error:", err);
+    res.status(500).send("Something went wrong");
+  }
+})
+
 module.exports = router;
