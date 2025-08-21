@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const { PassThrough } = require("stream");
 const { Readable } = require("stream");
+const YouTubeUtils = require('../utils/youtubeUtils');
 
 
 class YouTubeDownloadService {
@@ -49,19 +50,7 @@ class YouTubeDownloadService {
   }
 
   async fetchVideoTitle(videoId) {
-    const apiKey = process.env.YOUTUBE_API_KEY;
-    if (!apiKey) return null;
-    try {
-      const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`);
-      const data = await response.json();
-      if (data.items && data.items[0] && data.items[0].snippet && data.items[0].snippet.title) {
-        return data.items[0].snippet.title;
-      }
-      return null;
-    } catch (err) {
-      console.error("Error fetching video title:", err);
-      return null;
-    }
+    return YouTubeUtils.fetchVideoTitle(videoId);
   }
 
   getYTArgs(type, url, filePath, isRetry = false) {
@@ -128,7 +117,7 @@ class YouTubeDownloadService {
   }
 
   async prepareDownloadContext(url, type, res, isRetry) {
-    const videoId = YouTubeDownloadService.parseVideoId(url);
+    const videoId = YouTubeUtils.parseVideoId(url);
     if (!videoId) {
       throw new Error("Invalid YouTube URL");
     }
@@ -136,8 +125,8 @@ class YouTubeDownloadService {
     const key = this.getDownloadKey(videoId, type);
     const filePath = this.getCachedFilePath(videoId, type);
     const tmpPath = filePath + '.tmp';
+
     const videoTitle = await this.fetchVideoTitle(videoId);
-    
     console.log("Video Title:", videoTitle);
     this.setResponseHeaders(res, type, videoTitle || videoId);
 
@@ -330,12 +319,6 @@ class YouTubeDownloadService {
       });
     });
   }
-
-  static parseVideoId(url) {
-    const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
-    const match = url.match(regExp);
-    return match && match[1] ? match[1] : null;
-  } 
 
 }
 

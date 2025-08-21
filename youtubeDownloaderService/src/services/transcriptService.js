@@ -1,4 +1,5 @@
 const { spawn } = require('child_process');
+const YouTubeUtils = require('../utils/youtubeUtils');
 
 // Helpers for formatting
 function formatTime(ms) {
@@ -50,12 +51,6 @@ function toTXT(transcript) {
 //   return Math.round(value * 1000);
 // }
 class TranscriptService {
-	static parseVideoId(url) {
-    const regExp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
-    const match = url.match(regExp);
-    return match && match[1] ? match[1] : null;
-  } 
-
   /**
    * Fetch transcript entries for a YouTube video URL or ID.
    * @param {string} urlOrId YouTube watch URL or video ID
@@ -63,7 +58,7 @@ class TranscriptService {
    * @returns {Promise<Array<{ text: string; offset: number; duration: number }>>}
    */
   static async fetchTranscript(url, format = "txt") {
-    const videoId = TranscriptService.parseVideoId(url);
+    const videoId = YouTubeUtils.parseVideoId(url);
     if (!videoId || videoId.length !== 11) {
       const error = new Error("Invalid YouTube URL or video ID");
       error.statusCode = 400;
