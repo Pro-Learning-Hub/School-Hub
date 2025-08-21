@@ -7,7 +7,7 @@ import LectureDiscussion from '../LectureDiscussion/LectureDiscussion';
 import { useParams } from 'react-router-dom';
 import { useJoinRoom } from '../../hooks/socketConnectionHooks';
 import useSyncLectureEntry from '../../hooks/syncLectureEntryHook';
-import DownloadLink from './DownloadLink';
+import DownloadLectureLink from './DownloadLectureLink';
 
 export default function Lecture() {
   const { lectureId } = useParams();
@@ -80,9 +80,9 @@ export default function Lecture() {
                 <summary className="h5">Lecture Resources</summary>
                 <ul className="list-group list-group-flush">
                   <li className="list-group-item">
-                    <DownloadLink videoUrl={lectureData.get('videoLink')} mediaType="audio">
+                    <DownloadLectureLink videoUrl={lectureData.get('videoLink')} type="audio">
                       Audio
-                    </DownloadLink>
+                    </DownloadLectureLink>
                   </li>
                   <li className="list-group-item">
                     <a href={lectureData.get('notes')} target="_blank" rel="noopener noreferrer">Notes</a>
@@ -101,19 +101,23 @@ export default function Lecture() {
                     </details>
                   </li>
                   <li className="list-group-item">
-                    <a href={lectureData.get('transcript')} target="_blank" rel="noopener noreferrer">Transcript</a>
+                    <DownloadLectureLink videoUrl={lectureData.get('videoLink')} type="transcript">
+                      Transcript
+                    </DownloadLectureLink>
                   </li>
                   <li className="list-group-item">
-                    <a href={lectureData.get('subtitles')} target="_blank" rel="noopener noreferrer">Subtitles</a>
+                    <DownloadLectureLink videoUrl={lectureData.get('videoLink')} type="subtitles">
+                      Subtitles
+                    </DownloadLectureLink>
                   </li>
                   <li>
                     <details>
                       <summary className="list-group-item">Video</summary>
                       <ul>
                         <li>
-                          <DownloadLink videoUrl={lectureData.get('videoLink')} mediaType="video">
+                          <DownloadLectureLink videoUrl={lectureData.get('videoLink')} type="video">
                             Video [MP4]
-                          </DownloadLink>
+                          </DownloadLectureLink>
                         </li>
                         <li>
                           <a href={lectureData.get('videoLink')}>Youtube</a>
