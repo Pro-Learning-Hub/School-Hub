@@ -68,7 +68,7 @@ export default function useDownload(): UseDownloadReturn {
   const downloadTranscript = useCallback(
     async (videoUrl: string, type: TranscriptType = "transcript"): Promise<void> => {
       if (!videoUrl?.trim()) {
-        toast.error("Please provide a valid YouTube URL for transcript download.");
+        toast.error(`Please provide a valid YouTube URL for ${type} download.`);
         return;
       }
 
@@ -112,9 +112,9 @@ export default function useDownload(): UseDownloadReturn {
       };
 
       toast.promise(fetchTranscript(), {
-        loading: "Fetching transcript...",
+        loading: `Fetching ${type}...`,
         success: "Download started!",
-        error: "Error fetching transcript.",
+        error: `Error fetching ${type}.`,
       });
     },
     []
