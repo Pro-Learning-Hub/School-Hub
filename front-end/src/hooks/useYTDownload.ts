@@ -94,7 +94,12 @@ export default function useDownload(): UseDownloadReturn {
           // Create download link and trigger download
           const link = document.createElement("a");
           link.href = downloadUrl;
-          link.download = format === "srt" ? "subtitles.srt" : "transcript.txt";
+
+          let fileName = decodeURIComponent(response.headers.get('X-File-Name') || "");
+          if (!fileName)
+            fileName = format === 'txt' ? 'transcript.txt' : 'subtitles.srt';
+          link.download = fileName;
+
           document.body.appendChild(link);
           link.click();
           link.remove();

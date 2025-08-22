@@ -88,19 +88,23 @@
         const response = await fetch(`/transcript?url=${encodeURIComponent(url)}&format=${format}`);
         if (!response.ok) throw new Error('Failed to fetch transcript');
         else {
+          const blob = await response.blob();
+          const downloadUrl = URL.createObjectURL(blob);
 
-        const blob = await response.blob();
-        const downloadUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = format === 'srt' ? 'subtitles.srt' : 'transcript.txt';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(downloadUrl);
-        transcriptStatus.textContent = '✅ Download started!';
+          const a = document.createElement('a');
+          a.href = downloadUrl;
+
+          let fileName = decodeURIComponent(response.headers.get('X-File-Name'));
+          if (!fileName)
+            fileName = format === 'txt' ? 'transcript.txt' : 'subtitles.srt';
+          a.download = fileName;
+
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(downloadUrl);
+          transcriptStatus.textContent = '✅ Download started!';
         }
-
       } catch (e) {
         transcriptStatus.textContent = '❌ Error fetching transcript.';
       }

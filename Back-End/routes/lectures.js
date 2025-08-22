@@ -578,8 +578,12 @@ router.get('/lectures/transcript', async (req, res) => {
     }
 
     res.setHeader('Content-Type', transcriptResponse.headers.get('Content-Type'));
+    res.setHeader('Content-Disposition', transcriptResponse.headers.get('Content-Disposition'));
+    res.setHeader('X-File-Name', transcriptResponse.headers.get('X-File-Name'));
+    
+    res.setHeader('Access-Control-Expose-Headers', 'X-File-Name');
+    
     Readable.fromWeb(transcriptResponse.body).pipe(res);
-
   } catch (err) {
     console.error("TranscriptHandler Error:", err);
     res.status(500).send("Something went wrong");
