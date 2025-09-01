@@ -1,5 +1,6 @@
 const { spawn } = require('child_process');
 const YouTubeUtils = require('../utils/youtubeUtils');
+const EventEmitter = require('events');
 
 // Helpers for formatting
 function formatTime(ms) {
@@ -42,20 +43,30 @@ function toTXT(transcript) {
   return transcript.map((entry) => entry.text).join(" ");
 }
 
-// /**
-//  * Convert seconds (float) to milliseconds (int).
-//  * @param {number} value
-//  * @returns {number}
-//  */
-// function toMs(value) {
-//   return Math.round(value * 1000);
-// }
+// Create a singleton EventEmitter instance for the class
+const transcriptEventEmitter = new EventEmitter();
+
 class TranscriptService {
+  static pendingRequests = new Map();
+
+  /**
+   * Check if a transcript fetch is currently pending for the given url and format.
+   * @param {string} url YouTube watch URL or video ID
+   * @param {string} format "srt" or "txt"
+   * @returns {boolean}
+   */
+  static isPending(url, format = "txt") {
+    const videoId = YouTubeUtils.parseVideoId(url);
+    if (!videoId || videoId.length !== 11) return false;
+    const key = `${videoId}_${format}`;
+    return TranscriptService.pendingRequests.has(key);
+  }
+  
   /**
    * Fetch transcript entries for a YouTube video URL or ID.
    * @param {string} urlOrId YouTube watch URL or video ID
-   * @param {object} opts { lang?: string }
-   * @returns {Promise<Array<{ text: string; offset: number; duration: number }>>}
+   * @param {string} format "srt" or "txt"
+   * @returns {Promise<string>}
    */
   static async fetchTranscript(url, format = "txt") {
     const videoId = YouTubeUtils.parseVideoId(url);
@@ -64,6 +75,23 @@ class TranscriptService {
       error.statusCode = 400;
       throw error;
     }
+
+    const key = `${videoId}_${format}`;
+    // log time now
+    console.log(`Fetching transcript for ${videoId} in format ${format} at ${new Date().toISOString()}`);
+
+    // If already in progress, return a promise that waits for completion
+    if (TranscriptService.pendingRequests.has(key)) {
+      console.log(`in progress now ${videoId} in format ${format} at ${new Date().toISOString()}`);
+
+      return new Promise((resolve, reject) => {
+        transcriptEventEmitter.once(`${key}:success`, resolve);
+        transcriptEventEmitter.once(`${key}:error`, reject);
+      });
+    }
+
+    // Mark as pending
+    TranscriptService.pendingRequests.set(key, true);
 
     return new Promise((resolve, reject) => {
       const py = spawn("python3", ["src/scripts/getVideoTranscription.py", videoId]);
@@ -80,15 +108,28 @@ class TranscriptService {
       });
 
       py.on("close", (code) => {
-        if (code !== 0) {
-          return reject(new Error(errorBuffer || "Unknown error"));
-        }
         try {
+          if (code !== 0) {
+            const error = new Error(errorBuffer || "Unknown error");
+            transcriptEventEmitter.emit(`${key}:error`, error);
+            reject(error);
+            return;
+          }
+
           const transcriptionSnippets = JSON.parse(dataBuffer);
           const formattedTranscription = TranscriptService.format(transcriptionSnippets, format);
+
+          // Notify all waiting requests
+          transcriptEventEmitter.emit(`${key}:success`, formattedTranscription);
           resolve(formattedTranscription);
-        } catch (err) {
-          reject(new Error("Failed to parse transcript"));
+        } catch (parseErr) {
+          transcriptEventEmitter.emit(`${key}:error`, parseErr);
+          reject(parseErr);
+        } finally {
+          // Clean up
+          TranscriptService.pendingRequests.delete(key);
+          transcriptEventEmitter.removeAllListeners(`${key}:success`);
+          transcriptEventEmitter.removeAllListeners(`${key}:error`);
         }
       });
     });
