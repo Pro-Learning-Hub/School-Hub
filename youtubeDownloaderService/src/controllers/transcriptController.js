@@ -1,5 +1,13 @@
 const TranscriptService = require("../services/transcriptService");
 const YouTubeUtils = require("../utils/youtubeUtils");
+const pLimit = require("p-limit").default;
+
+// Create rate limiter based on environment variable
+const maxConcurrentTranscriptRequests = parseInt(process.env.MAX_CONCURRENT_TRANSCRIPT_REQUESTS) || 10;
+const transcriptLimiter = pLimit(maxConcurrentTranscriptRequests);
+
+console.log(`Transcript rate limiter initialized with max ${maxConcurrentTranscriptRequests} concurrent requests`);
+
 
 /**
  * GET /transcript?url=<youtube_url_or_id>&format=srt|txt&lang=en&as=download
@@ -14,8 +22,16 @@ exports.getTranscript = async (req, res) => {
 
   try {
     const videoId = YouTubeUtils.parseVideoId(url);
+    
+    // Check if the video transcript is already being fetched
+    const isPending = TranscriptService.isPending(url, format);
+
+    const fetchPromise = isPending
+      ? TranscriptService.fetchTranscript(url, format) // Bypass limiter for pending requests
+      : transcriptLimiter(() => TranscriptService.fetchTranscript(url, format)); // Use limiter for new requests    
+    
     const [transcript, videoTitle] = await Promise.all([
-      TranscriptService.fetchTranscript(url, format),
+      fetchPromise,
       YouTubeUtils.fetchVideoTitle(videoId)
     ]);
     
@@ -30,7 +46,6 @@ exports.getTranscript = async (req, res) => {
 
     res.setHeader("X-File-Name", encodedFilename);
     res.setHeader("Content-Disposition", `attachment; filename*=UTF-8''${encodedFilename}`);
-
     res.send(transcript);
   } catch (err) {
     console.error(err);
