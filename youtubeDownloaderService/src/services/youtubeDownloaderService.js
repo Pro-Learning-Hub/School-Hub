@@ -78,7 +78,7 @@ class YouTubeDownloadService {
           "--no-playlist",
           "--output", filePath,
 
-          // "--cookies", this.cookiesPath
+          "--cookies", this.cookiesPath
         ];
       }
     }
@@ -240,6 +240,7 @@ class YouTubeDownloadService {
     const { url, tmpPath, key, type, videoId, videoTitle, filePath } = downloadContext;
     
     const streamUrl = await this.getMp4StreamUrl(url);
+    console.log(streamUrl);
     const response = await fetch(streamUrl);
     if (!response.ok) throw new Error("Failed to fetch stream");
 
@@ -304,7 +305,7 @@ class YouTubeDownloadService {
         "-f", "best[ext=mp4]",
         "--get-url",
         "--no-playlist",
-        "--cookies", this.cookiesPath
+        // "--cookies", this.cookiesPath
       ], { encoding: "utf8" }, (error, stdout) => {
         if (error) {
           return reject(error);
