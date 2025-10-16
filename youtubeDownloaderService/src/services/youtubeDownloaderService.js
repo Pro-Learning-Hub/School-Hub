@@ -84,11 +84,11 @@ class YouTubeDownloadService {
     }
 
     return [
-      url,
-      "-f", "best[ext=mp4]",
+      "-f", "best[height<=720]/18",
       "--no-playlist",
       "--output", "-",
-      "--cookies", this.cookiesPath
+      url,
+      // "--cookies", this.cookiesPath
     ];
   }
 
@@ -202,7 +202,7 @@ class YouTubeDownloadService {
 
   async handleMp3Download(downloadContext, pass, req, res, isRetry) {
     const { url, filePath, key, type, videoId, videoTitle } = downloadContext;
-    
+    console.log(type)
     const yt = execFile('yt-dlp', this.getYTArgs(type, url, filePath, isRetry));
     
     yt.stderr.on("data", (data) => 
@@ -238,25 +238,35 @@ class YouTubeDownloadService {
 
   async handleMp4Download(downloadContext, pass, req, res) {
     const { url, tmpPath, key, type, videoId, videoTitle, filePath } = downloadContext;
-    
+  
     const streamUrl = await this.getMp4StreamUrl(url);
-    console.log(streamUrl);
+    console.log("[yt-dlp] Stream URL:", streamUrl);
+  
+    // Detect HLS manifest (.m3u8)
+    if (streamUrl.includes(".m3u8")) {
+    console.log("Detected HLS manifest. Streaming segments...");
+    await this.streamHlsManifest(streamUrl, pass, tmpPath);
+    this.handleDownloadComplete(key, type, videoId, true, filePath, videoTitle);
+    return;
+    }
+  
+    // Otherwise: normal direct MP4 stream
     const response = await fetch(streamUrl);
     if (!response.ok) throw new Error("Failed to fetch stream");
-
+  
     const nodeStream = Readable.fromWeb(response.body);
     const fileStream = fs.createWriteStream(tmpPath);
-    
-    nodeStream.pipe(fileStream);
+  
     nodeStream.pipe(pass);
-
+    nodeStream.pipe(fileStream);
+  
     fileStream.on("finish", () => {
-      this.handleDownloadComplete(key, type, videoId, true, filePath, videoTitle);
+    this.handleDownloadComplete(key, type, videoId, true, filePath, videoTitle);
     });
-
+  
     this.setupRequestAbortHandler(req, nodeStream, pass, downloadContext, fileStream);
   }
-
+  
   setupRequestAbortHandler(req, streamSource, pass, downloadContext, fileStream = null) {
     const { key, type, videoId, filePath, videoTitle } = downloadContext;
     
@@ -302,10 +312,10 @@ class YouTubeDownloadService {
     return new Promise((resolve, reject) => {
       execFile("yt-dlp", [
         videoUrl,
-        "-f", "best[ext=mp4]",
+        "-f", "best[height<=720]/18",
         "--get-url",
         "--no-playlist",
-        // "--cookies", this.cookiesPath
+        "--cookies", this.cookiesPath
       ], { encoding: "utf8" }, (error, stdout) => {
         if (error) {
           return reject(error);
@@ -319,6 +329,70 @@ class YouTubeDownloadService {
         resolve(url);
       });
     });
+  }
+
+  async streamHlsManifest(manifestUrl, pass, tmpPath) {
+    const manifestRes = await fetch(manifestUrl);
+    if (!manifestRes.ok) throw new Error("Failed to fetch HLS manifest");
+
+    const manifestText = await manifestRes.text();
+    const segments = this.parseSimpleM3U8(manifestText, manifestUrl);
+
+    if (!segments || segments.length === 0) {
+      throw new Error("No segments found in HLS manifest");
+    }
+
+    const fileStream = fs.createWriteStream(tmpPath);
+    console.log(`[HLS] Streaming ${segments.length} segments from manifest...`);
+
+    for (const segUrl of segments) {
+      try {
+        const segRes = await fetch(segUrl);
+        if (!segRes.ok) {
+          console.warn(`[HLS] Failed to fetch segment: ${segUrl}`);
+          continue;
+        }
+
+        // Stream each segment to both response and file
+        await new Promise((resolve, reject) => {
+          const segStream = Readable.fromWeb(segRes.body);
+          segStream.on("error", reject);
+          segStream.on("end", resolve);
+          segStream.pipe(pass, { end: false });
+          segStream.pipe(fileStream, { end: false });
+        });
+      } catch (err) {
+        console.error(`[HLS] Segment error: ${err.message}`);
+      }
+    }
+
+    // End both streams after all segments
+    pass.end();
+    fileStream.end();
+    console.log("[HLS] Completed streaming all segments");
+  }
+
+  /**
+   * Minimal M3U8 parser: extracts all segment URLs.
+   */
+  parseSimpleM3U8(manifestText, baseUrl) {
+    const lines = manifestText.split("\n");
+    const segments = [];
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+
+      // Convert relative URIs to absolute
+      try {
+        const fullUrl = new URL(trimmed, baseUrl).href;
+        segments.push(fullUrl);
+      } catch {
+        console.warn(`[HLS] Invalid segment URI: ${trimmed}`);
+      }
+    }
+
+    return segments;
   }
 
 }
