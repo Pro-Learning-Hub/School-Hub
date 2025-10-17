@@ -67,3 +67,13 @@ I would also add that i may rely on the close event for that, that that might wo
 
 ## also this leaves you with another problem.. what if the proxy doesn't do that.. 
 - simply for that matter, I wont' care about this now, because thisi s not a public api.. that work as a package and you deploy it yourself and handle that.. and for the app itself,, the frontned is well configured with the backend anyway .. I want to sleep so i'm not sure if what i'm saying makes any sense now..
+
+
+
+## Helloo 🤦‍♂️😇
+## Ok, Using ExecFileSync while at teh same time you expect more that one request at the same time, blocks the main thread and you can't even get a status response or something.. 
+Rely more on promises, wrap execFile with it's callback in a promise and resolve on success and reject on failure
+
+
+## The darn youtube doesn't wanna send stream URLs now.. 
+I took the manifest.. parse it and take the 10s of URLs to stream tiny segments of the video.. fetch them one by one and pass the result in the pipe to the cache file and to the user and keep the pipe open after each segment and when i'm done.. i close the pipe.

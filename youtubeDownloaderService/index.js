@@ -3,10 +3,9 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const fs = require("fs");
-const { PassThrough } = require("stream");
 const downloadRouter = require("./src/routes/download");
 const infoRouter = require("./src/routes/info");
+const transcriptRouter = require("./src/routes/transcript");
 const { Readable } = require("stream");
 
 
@@ -18,6 +17,8 @@ const PORT = process.env.PORT || 3010;
 
 app.use("/download", downloadRouter);
 app.use("/info", infoRouter);
+app.use("/transcript", transcriptRouter);
+
 
 app.get('/proxy', async (req, res) => {
   const { url, isAudioOnly } = req.query;
