@@ -77,3 +77,7 @@ Rely more on promises, wrap execFile with it's callback in a promise and resolve
 
 ## The darn youtube doesn't wanna send stream URLs now.. 
 I took the manifest.. parse it and take the 10s of URLs to stream tiny segments of the video.. fetch them one by one and pass the result in the pipe to the cache file and to the user and keep the pipe open after each segment and when i'm done.. i close the pipe.
+
+
+## Darn it.. This streaming is a corrupt mp4.. it's just a bunch of consecutive .ts .. so many players won't work here.. 
+use ffmpeg to do the neccesary transformation on the go just handle it the m3u8 streams playlist

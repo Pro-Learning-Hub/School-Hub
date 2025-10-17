@@ -125,21 +125,6 @@ export default function Lecture() {
                       </ul>
                     </details>
                   </li>
-                  <li>
-                    <details>
-                      <summary className="list-group-item">Video</summary>
-                      <ul>
-                        <li>
-                          <DownloadLink videoUrl={lectureData.get('videoLink')} mediaType="video">
-                            Video [MP4]
-                          </DownloadLink>
-                        </li>
-                        <li>
-                          <a href={lectureData.get('videoLink')}>Youtube</a>
-                        </li>
-                      </ul>
-                    </details>
-                  </li>
                 </ul>
               </details>
 
