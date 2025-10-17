@@ -1,4 +1,4 @@
-const { execFile } = require("child_process");
+const { execFile, spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 const { PassThrough } = require("stream");
@@ -235,36 +235,120 @@ class YouTubeDownloadService {
       this.handleDownloadComplete(key, type, videoId, false, filePath, videoTitle);
     }
   }
-
+  
   async handleMp4Download(downloadContext, pass, req, res) {
     const { url, tmpPath, key, type, videoId, videoTitle, filePath } = downloadContext;
-  
-    const streamUrl = await this.getMp4StreamUrl(url);
-    console.log("[yt-dlp] Stream URL:", streamUrl);
-  
-    // Detect HLS manifest (.m3u8)
-    if (streamUrl.includes(".m3u8")) {
-    console.log("Detected HLS manifest. Streaming segments...");
-    await this.streamHlsManifest(streamUrl, pass, tmpPath);
-    this.handleDownloadComplete(key, type, videoId, true, filePath, videoTitle);
-    return;
+    
+    let streamUrl;
+    try {
+      streamUrl = await this.getMp4StreamUrl(url);
+    } catch (err) {
+      console.error("Failed to get stream URL:", err);
+      res.status(500).send("Failed to retrieve video URL");
+      return;
     }
-  
-    // Otherwise: normal direct MP4 stream
-    const response = await fetch(streamUrl);
-    if (!response.ok) throw new Error("Failed to fetch stream");
-  
-    const nodeStream = Readable.fromWeb(response.body);
+
+    console.log("Got stream URL:", streamUrl);
+
+    // Prepare file write stream
     const fileStream = fs.createWriteStream(tmpPath);
-  
-    nodeStream.pipe(pass);
-    nodeStream.pipe(fileStream);
-  
+    let processOrStream = null; // To handle cleanup properly
+    
+    // If manifest (.m3u8), use ffmpeg
+    if (streamUrl.includes(".m3u8")) {
+      console.log("Using ffmpeg for HLS manifest streaming...");
+      const ffmpegProcess = spawn("ffmpeg", [
+        "-loglevel", "error",
+        "-i", streamUrl,
+        "-c", "copy",
+        "-movflags", "frag_keyframe+empty_moov",
+        "-bsf:a", "aac_adtstoasc",
+        "-f", "mp4",
+        "pipe:1"
+      ], { stdio: ['ignore', 'pipe', 'inherit'] });
+
+      processOrStream = ffmpegProcess;
+
+      const { pipeline } = require("stream");
+
+      pipeline(ffmpegProcess.stdout, pass, (err) => {
+        if (err) console.error("Pipeline to response failed:", err);
+      });
+      
+      pipeline(ffmpegProcess.stdout, fileStream, (err) => {
+        if (err) console.error("Pipeline to file failed:", err);
+      });
+
+      ffmpegProcess.on("error", (err) => {
+        console.error("ffmpeg process error:", err);
+        res.status(500).send("Stream failed");
+        this.handleDownloadComplete(key, type, videoId, false, filePath, videoTitle);
+      });
+
+      ffmpegProcess.on("close", (code) => {
+        if (code !== 0) {
+          console.error(`ffmpeg exited with code ${code}`);
+          res.status(500).send("Stream failed");
+          this.handleDownloadComplete(key, type, videoId, false, filePath, videoTitle);
+        } else {
+          console.log("ffmpeg completed successfully");
+        }
+      });
+    
+    } else {
+      console.log("Using direct fetch for MP4 stream...");
+      try {
+        // Fallback for direct MP4 streams
+        const fetchRes = await fetch(streamUrl);
+        if (!fetchRes.ok) throw new Error("Failed to fetch stream");
+        
+        const nodeStream = Readable.fromWeb(fetchRes.body);
+        processOrStream = nodeStream;
+        
+        nodeStream.pipe(pass);
+        nodeStream.pipe(fileStream);
+
+        nodeStream.on("error", (err) => {
+          console.error("Stream error:", err);
+          res.status(500).send("Stream failed");
+          this.handleDownloadComplete(key, type, videoId, false, filePath, videoTitle);
+        });
+      } catch (err) {
+        console.error("Fetch error:", err);
+        res.status(500).send("Failed to fetch stream");
+        this.handleDownloadComplete(key, type, videoId, false, filePath, videoTitle);
+        return;
+      }
+    }
+
+    // Setup abort handler for both cases
+    this.setupRequestAbortHandler(req, processOrStream, pass, downloadContext, fileStream);
+
     fileStream.on("finish", () => {
-    this.handleDownloadComplete(key, type, videoId, true, filePath, videoTitle);
+      this.handleDownloadComplete(key, type, videoId, true, filePath, videoTitle);
     });
-  
-    this.setupRequestAbortHandler(req, nodeStream, pass, downloadContext, fileStream);
+
+    fileStream.on("error", (err) => {
+      console.error("File write error:", err);
+      this.handleDownloadComplete(key, type, videoId, false, filePath, videoTitle);
+    });
+  }
+
+  async getMp4StreamUrl(videoUrl) {
+    return new Promise((resolve, reject) => {
+      execFile("yt-dlp", [
+        videoUrl,
+        "-f", "best[height<=720]",
+        "--get-url",
+        "--no-playlist",
+        "--cookies", this.cookiesPath
+      ], { encoding: "utf8" }, (error, stdout) => {
+        if (error) return reject(error);
+        const url = stdout.trim().split("\n")[0];
+        if (!url) return reject(new Error("No stream URL found"));
+        resolve(url);
+      });
+    });
   }
   
   setupRequestAbortHandler(req, streamSource, pass, downloadContext, fileStream = null) {
@@ -306,29 +390,6 @@ class YouTubeDownloadService {
     
     this.currentDownloads--;      
     this.processNextInQueue();
-  }
-
-  async getMp4StreamUrl(videoUrl) {
-    return new Promise((resolve, reject) => {
-      execFile("yt-dlp", [
-        videoUrl,
-        "-f", "best[height<=720]/18",
-        "--get-url",
-        "--no-playlist",
-        "--cookies", this.cookiesPath
-      ], { encoding: "utf8" }, (error, stdout) => {
-        if (error) {
-          return reject(error);
-        }
-
-        const url = stdout.trim().split("\n")[0];
-        if (!url) {
-          return reject(new Error("No stream URL found"));
-        }
-
-        resolve(url);
-      });
-    });
   }
 
   async streamHlsManifest(manifestUrl, pass, tmpPath) {
@@ -394,7 +455,6 @@ class YouTubeDownloadService {
 
     return segments;
   }
-
 }
 
 module.exports = YouTubeDownloadService;
