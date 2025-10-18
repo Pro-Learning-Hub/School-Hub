@@ -66,19 +66,19 @@ class YouTubeDownloadService {
           "--no-playlist",
           "--output", filePath,
 
-          "--cookies", this.cookiesPath
+          // "--cookies", this.cookiesPath
         ];
       } else {
         return [
           '-4',
           url,
-          "-f", "bestaudio",
+          "-f", "251/bestaudio",
           // "--extract-audio",
           // "--audio-format", "mp3",
           "--no-playlist",
           "--output", filePath,
 
-          "--cookies", this.cookiesPath
+          // "--cookies", this.cookiesPath
         ];
       }
     }
@@ -338,7 +338,9 @@ class YouTubeDownloadService {
     return new Promise((resolve, reject) => {
       execFile("yt-dlp", [
         videoUrl,
-        "-f", "best[height<=720]",
+        // I'm starting with 18 desbite being low quality because I want to keep the streaming behaviour with compatibility
+        // You doing need to understand nothing.. just know that i'm fighting youtube here for 2 month
+        "-f", "18/best[height<=720]",
         "--get-url",
         "--no-playlist",
         "--cookies", this.cookiesPath
