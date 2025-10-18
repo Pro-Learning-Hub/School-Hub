@@ -81,3 +81,8 @@ I took the manifest.. parse it and take the 10s of URLs to stream tiny segments 
 
 ## Darn it.. This streaming is a corrupt mp4.. it's just a bunch of consecutive .ts .. so many players won't work here.. 
 use ffmpeg to do the neccesary transformation on the go just handle it the m3u8 streams playlist
+
+## Still breaking on some players.. 
+1. If i want to keep streaming behaviour and start download to the user immedietly.. i'll have to make ffmpeg actually re-encode on the go not just play with headers and stuff.. 
+and this will be unbelievable slow.. 
+2. fallback to format 18... a 360p ready mp4 non muxed or anything and stream it.. but this is low quality of course.. yet acceptable and details are not deleted 
