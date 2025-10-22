@@ -559,4 +559,54 @@ router.post('/questions/diff', verifyToken, async (req, res) => {
   }
 });
 
+router.get('/api/questions/search', verifyToken, async (req, res) => {
+  const { courseId, lectureId, query } = req.query;
+  if (
+    (courseId && lectureId) ||
+    (!courseId && !lectureId) ||
+    !query
+  ) {
+    return res.status(400).json({ message: 'Invalid search parameters. Expecting (courseId | lectureId, query)' });
+  }
+  const decodedQuery = decodeURIComponent(query);
+
+  // Check if the course or lecture exists
+  const idToCheck = courseId ? courseId : lectureId;
+  const parentType = courseId ? 'Course' : 'Lecture';
+  const tableToCheck = courseId ? 'courses' : 'lectures';
+  const [questionParent] = await db.query(
+    `SELECT 1 FROM ${tableToCheck} WHERE id = ?`,
+    [idToCheck]
+  );
+  if (!questionParent) {
+    return res.status(404).json({ message: `${parentType} not found` });
+  }
+
+
+  try {
+    const results = await db.query(
+      `SELECT id,
+             MATCH(title, body) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+      FROM questions
+      WHERE ${courseId ? 'courseId' : 'lectureId'} = ?
+        AND MATCH(title, body) AGAINST(? IN NATURAL LANGUAGE MODE) > 0.25
+      ORDER BY relevance DESC;`,
+      [decodedQuery, courseId ? courseId : lectureId, decodedQuery]
+    );
+    
+    // Extract just the IDs in order of relevance
+    const questionIds = results.map(result => result.id);
+    
+    res.status(200).json({
+      results: questionIds,
+      total: questionIds.length,
+      query: decodedQuery,
+      context: courseId ? { courseId } : { lectureId },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error searching questions' });
+  }
+});
+
 module.exports = router;
