@@ -590,4 +590,42 @@ router.get('/lectures/transcript', async (req, res) => {
   }
 })
 
+router.get('/api/lectures/search', verifyToken, async (req, res) => {
+  const { courseId, query } = req.query;
+  if (!courseId || !query) 
+    return res.status(400).json({ message: 'Invalid search parameters. Expecting (courseId & query)' });
+  
+  const decodedQuery = decodeURIComponent(query);
+
+  const [course] = await db.query(
+    `SELECT 1 FROM courses WHERE id = ?`,
+    [courseId]
+  );
+  if (!course) {
+    return res.status(404).json({ message: `Course not found` });
+  }
+
+
+  try {
+    const results = await db.query(
+      `SELECT id, title, description, tags, createdAt,
+          MATCH(title, description, tags) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+      FROM lectures
+      WHERE courseId = ?
+        AND MATCH(title, description, tags) AGAINST(? IN NATURAL LANGUAGE MODE) > 0.25
+      ORDER BY relevance DESC;`,
+      [decodedQuery, courseId, decodedQuery ]
+    );
+    
+    res.status(200).json({
+      results,
+      total: results.length,
+      query: decodedQuery,
+      context: { courseId },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error searching lectures' });
+  }
+});
 module.exports = router;
