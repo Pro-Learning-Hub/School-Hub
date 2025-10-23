@@ -616,6 +616,13 @@ router.get('/api/lectures/search', verifyToken, async (req, res) => {
       ORDER BY relevance DESC;`,
       [decodedQuery, courseId, decodedQuery ]
     );
+
+    // Normalize the tags from a string to an array
+    results.forEach((lecture) => {  
+      lecture.tags = lecture.tags
+        ? lecture.tags.split(',').map(tag => tag.trim())
+        : [];
+    });
     
     res.status(200).json({
       results,
