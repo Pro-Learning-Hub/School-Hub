@@ -2,8 +2,11 @@ import { useState, useTransition, useEffect } from "react";
 import useDebounceValue from "./useDebounceValue.hook";
 import useFetch from "./useFetch.hook";
 import { DOMAIN } from '../utils/constants';
-import { getToken } from "../utils/utilFunctions";
+// @ts-ignore
+import { getToken as _getToken } from "../utils/utilFunctions";
 import { Lecture, SearchResponse } from '../types/lecture.types';
+
+const getToken = _getToken as (type: string) => string;
 
 interface UseLecturesSearchReturn {
   searchResults: Lecture[];
