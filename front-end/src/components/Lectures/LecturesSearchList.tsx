@@ -2,13 +2,7 @@
 import LectureEntry from './LectureEntry';
 import React from 'react';
 import { Search, AlertCircle, Loader2 } from 'lucide-react';
-
-interface Lecture {
-	id: string;
-	title: string;
-	description: string;
-	tags: string[];
-}
+import { Lecture } from '../../types/lecture.types';
 
 interface LecturesSearchListProps {
 	results: Lecture[];
