@@ -98,6 +98,7 @@ const db = require('./db');
 			userId VARCHAR(36) NOT NULL,
 			courseId VARCHAR(36) NOT NULL,
 			sectionId VARCHAR(36) NOT NULL,
+			FULLTEXT (title, description, tags) WITH PARSER ngram,
 			FOREIGN KEY (userId) REFERENCES users(id),
 			FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,
 			FOREIGN KEY (sectionId) REFERENCES sections(id) ON DELETE CASCADE
@@ -131,6 +132,7 @@ const db = require('./db');
 			userId VARCHAR(36) NOT NULL,
 			lectureId VARCHAR(36),
 			courseId VARCHAR(36),
+			FULLTEXT (title, body) WITH PARSER ngram,
 			FOREIGN KEY (userId) REFERENCES users(id),
 			FOREIGN KEY (lectureId) REFERENCES lectures(id) ON DELETE CASCADE,
 			FOREIGN KEY (courseId) REFERENCES courses(id) ON DELETE CASCADE,

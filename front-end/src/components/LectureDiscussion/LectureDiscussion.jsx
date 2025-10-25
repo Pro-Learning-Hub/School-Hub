@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../utilityComponents/Loading';
 import './css/discussion.css';
+import '../Lectures/Lectures.css';
 import DiscussionEntryEditor from '../DiscussionEntries/DiscussionEntryEditor';
 import DiscussionEntries from '../DiscussionEntries/DiscussionEntries';
+import QuestionsSearchResults from '../Questions/QuestionsSearchResults';
+import SearchInput from '../sharedComponents/SearchInput';
 import {
   getLectureDiscussions,
   addLectureDiscussionEntry,
@@ -13,6 +16,7 @@ import {
   makeLectureDiscussionsSelector,
 } from '../../redux/selectors/DiscussionsSelectors';
 import useSyncLectureDiscussions from '../../hooks/syncLecturesDiscussionsHook';
+import useQuestionSearchState from '../../hooks/useQuestionSearchState';
 import { useJoinRoom } from '../../hooks/socketConnectionHooks';
 
 
@@ -21,6 +25,9 @@ export default function LectureDiscussion({ lectureId = '' }) {
   const dispatch = useDispatch();
   const isLoading = useSelector(selectDiscussionsIsLoading);
   const entries = useSelector(makeLectureDiscussionsSelector(lectureId));
+
+  // Search state management
+  const searchState = useQuestionSearchState('lecture', lectureId);
 
   useJoinRoom(`lectureDiscussion-${lectureId}`);
   useSyncLectureDiscussions(lectureId);
@@ -44,33 +51,30 @@ export default function LectureDiscussion({ lectureId = '' }) {
     <div className="container my-5">
       <h2 className="text-center">Lecture Discussion</h2>
 
-      {/* Search Field */}
-      <form
-        className="d-flex mt-3 mb-3"
-        role="search"
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.target.elements[0].value = '';
-        }}>
-        <input
-          className="form-control me-2 p-3"
-          type="search"
-          placeholder="Search the content of the course"
-          aria-label="Search"
+      {/* Search Component */}
+      <SearchInput 
+        searchQuery={searchState.searchQuery}
+        setSearchQuery={searchState.setSearchQuery}
+        placeholder="Search lecture questions and discussions..."
+      />
+      {/* Conditional rendering based on search state */}
+      {searchState.showSearchResults ? (
+        <QuestionsSearchResults
+          results={searchState.searchResults}
+          loading={searchState.searchLoading}
+          error={searchState.searchError}
+          query={searchState.debouncedQuery}
+          isLecture={true}
         />
-        <button className="btn btn-primary" type="submit">
-          Search
-        </button>
-      </form>
-
-      {isLoading ? (
-        <Loading />
       ) : (
-        <div className="discussion-entries">
-          <DiscussionEntries entries={entries} chunkSize={10} isLecture />
-        </div>
+        isLoading ? (
+          <Loading />
+        ) : (
+          <div className="discussion-entries">
+            <DiscussionEntries entries={entries} chunkSize={10} isLecture />
+          </div>
+        )
       )}
-
       <div className="text-center mt-4">
         {askNewQuestion ? (
           <DiscussionEntryEditor onPublish={handlePublishQuestion} />
