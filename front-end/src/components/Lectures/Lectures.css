@@ -194,3 +194,23 @@
 .search-empty {
   animation: fadeInUp 0.3s ease-out;
 }
+
+/* Questions Search Results */
+.search-questions-results {
+  margin-top: 1rem;
+}
+
+.search-questions-results .discussion-list {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.search-questions-results .discussion-entry {
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-questions-results .discussion-entry:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
