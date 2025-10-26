@@ -1,19 +1,51 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useRef, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Presentation, EllipsisVertical, SquarePen, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Tag from './Tag';
 import { Link } from 'react-router-dom';
 import { selectUserRole } from '../../redux/selectors/uiSelectors';
+import { deleteLecture } from '../../redux/actions/lecturesThunks';
 
 export default function LectureEntry({
   title = '',
   id = '',
   description = '',
   tags = [],
+  sectionId = '',
+  courseId = '',
 }) {
   const userRole = useSelector(selectUserRole);
+  const dispatch = useDispatch();
   const [showOptions, setShowOptions] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowOptions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleEdit = () => {
+    // Close the dropdown first
+    setShowOptions(false);
+    // Navigate to edit page
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('Are you sure you want to delete this lecture?')) {
+      dispatch(deleteLecture(sectionId, id));
+      setShowOptions(false);
+    }
+  };
 
   return (
     <div className="card lecture-entry shadow-sm border-0 h-100 hover-shadow">
@@ -39,7 +71,7 @@ export default function LectureEntry({
             
             {/* Options Menu */}
             {userRole !== 'student' && (
-              <div className="position-relative">
+              <div className="position-relative" ref={dropdownRef}>
                 <button 
                   type="button" 
                   className="btn btn-link p-1 text-muted"
@@ -49,11 +81,19 @@ export default function LectureEntry({
                 </button>
                 {showOptions && (
                   <div className="dropdown-menu show position-absolute end-0 mt-1" style={{ minWidth: '160px' }}>
-                    <button className="dropdown-item d-flex align-items-center" type="button">
+                    <Link 
+                      to={`/lectures/${id}/edit`} 
+                      className="dropdown-item d-flex align-items-center text-decoration-none"
+                      onClick={handleEdit}
+                    >
                       <SquarePen size={16} className="me-2" />
                       Edit Lecture
-                    </button>
-                    <button className="dropdown-item d-flex align-items-center text-danger" type="button">
+                    </Link>
+                    <button 
+                      className="dropdown-item d-flex align-items-center text-danger" 
+                      type="button"
+                      onClick={handleDelete}
+                    >
                       <Trash2 size={16} className="me-2" />
                       Delete Lecture
                     </button>
