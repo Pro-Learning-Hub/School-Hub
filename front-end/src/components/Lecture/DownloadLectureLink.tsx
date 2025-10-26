@@ -10,9 +10,10 @@ interface DownloadLinkProps {
   videoUrl: string;
   type: lectureDownloadFormat;
   children?: React.ReactNode;
+  className?: string;
 }
 
-const DownloadLectureLink: React.FC<DownloadLinkProps> = ({ videoUrl, type, children }) => {
+const DownloadLectureLink: React.FC<DownloadLinkProps> = ({ videoUrl, type, children, className = '' }) => {
   const {downloadMedia, downloadTranscript, isTranscriptLoading} = useDownload();
 
   const isDownloading = ["transcript", "subtitles"].includes(type) && isTranscriptLoading;
@@ -33,7 +34,7 @@ const DownloadLectureLink: React.FC<DownloadLinkProps> = ({ videoUrl, type, chil
 			<a
         href="#"
         onClick={handleDownload}
-        className={`${isDownloading ? 'downloading' : ''}`}
+        className={`${className} ${isDownloading ? 'downloading' : ''}`.trim()}
         aria-disabled={isDownloading}
         >
 				{children ? children : displayText}
