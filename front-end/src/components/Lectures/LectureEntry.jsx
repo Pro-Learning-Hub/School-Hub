@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Presentation, EllipsisVertical, SquarePen, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Tag from './Tag';
 import { Link } from 'react-router-dom';
+import { selectUserRole } from '../../redux/selectors/uiSelectors';
 
 export default function LectureEntry({
   title = '',
@@ -10,8 +12,7 @@ export default function LectureEntry({
   description = '',
   tags = [],
 }) {
-  // Just temporarily for now. It will be a selector from the state
-  const [role] = useState('student');
+  const userRole = useSelector(selectUserRole);
   const [showOptions, setShowOptions] = useState(false);
 
   return (
@@ -37,7 +38,7 @@ export default function LectureEntry({
             </h5>
             
             {/* Options Menu */}
-            {role !== 'student' && (
+            {userRole !== 'student' && (
               <div className="position-relative">
                 <button 
                   type="button" 
