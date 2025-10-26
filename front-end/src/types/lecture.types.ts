@@ -5,6 +5,8 @@ export interface Lecture {
   title: string;
   description: string;
   tags: string[];
+  sectionId?: string;
+  courseId?: string;
 }
 
 export interface SearchResponse {
