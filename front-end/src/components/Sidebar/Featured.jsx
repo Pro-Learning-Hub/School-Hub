@@ -2,9 +2,100 @@ import React from 'react';
 import { Brain, Sparkles } from 'lucide-react';
 import StudyWithMe from './StudyWithMe';
 
-const styles = {
-  icons: {width: '2rem', height: '2rem'}
-}
+// Icon styles configuration
+const ICON_STYLES = {
+  width: '1.5rem',
+  height: '1.5rem',
+};
+
+// Featured links configuration
+const FEATURED_LINKS = [
+  {
+    name: 'Notion',
+    url: 'https://www.notion.so/',
+    icon: 'https://www.notion.com/front-static/favicon.ico',
+    type: 'image',
+  },
+  {
+    name: 'Tic Tic',
+    url: 'https://ticktick.com/webapp/#q/all/habit',
+    icon: 'https://img.icons8.com/fluency/48/tick-tick.png',
+    type: 'image',
+    alt: 'tick-tick',
+  },
+  {
+    name: 'Learn How To Learn for Youth',
+    url: 'https://www.coursera.org/learn/learning-how-to-learn-youth/',
+    icon: 'https://d3njjcbhbojbot.cloudfront.net/web/images/favicons/favicon-v2-32x32.png',
+    type: 'image',
+    alt: 'Coursera',
+  },
+  {
+    name: 'Learn How To Learn',
+    url: 'https://www.coursera.org/learn/learning-how-to-learn',
+    icon: Brain,
+    type: 'component',
+  },
+  {
+    name: 'Flocus',
+    url: 'https://flocus.com/',
+    icon: 'https://flocus.com/resources/assets/favicon.jpg',
+    type: 'image',
+  },
+  {
+    name: 'Study Together',
+    url: 'https://studytogether.com/',
+    icon: 'https://cdn.prod.website-files.com/60890f6ac44206aef9237eb4/60bf58e7f22ec73793160127_Favicon-small.png',
+    type: 'image',
+    alt: 'StudyTogether',
+  },
+  {
+    name: 'Forest',
+    url: 'https://forestapp.cc',
+    icon: 'https://www.forestapp.cc/favicon.ico',
+    type: 'image',
+    alt: 'Forest App.. Stay focused.. Be present',
+  },
+  {
+    name: 'SleepTown',
+    url: 'https://sleeptown.seekrtech.com/',
+    icon: 'https://sleeptown.seekrtech.com/img/icon_128_round.png',
+    type: 'image',
+    alt: 'SleepTown...Build Healthy Sleep Habits',
+  },
+  {
+    name: 'RemindMe',
+    url: 'https://remindme-l.vercel.app',
+    icon: 'https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/17746265/ai_logo_1726750030_AyBzw8.png',
+    type: 'image',
+    alt: 'RemindMe',
+  },
+];
+
+const FeaturedLink = ({ name, url, icon, type, alt }) => {
+  const renderIcon = () => {
+    if (type === 'component') {
+      const IconComponent = icon;
+      return <IconComponent style={ICON_STYLES} />;
+    }
+    return (
+      <img
+        src={icon}
+        alt={alt || name}
+        style={ICON_STYLES}
+      />
+    );
+  };
+
+  return (
+    <li>
+      <a href={url} target="_blank" rel="noreferrer">
+        {renderIcon()}
+        {name}
+      </a>
+    </li>
+  );
+};
 
 export default function Featured() {
   return (
@@ -13,117 +104,18 @@ export default function Featured() {
         <Sparkles /> Featured
       </summary>
       <ul>
+        {FEATURED_LINKS.map((link) => (
+          <FeaturedLink
+            key={link.name}
+            name={link.name}
+            url={link.url}
+            icon={link.icon}
+            type={link.type}
+            alt={link.alt}
+          />
+        ))}
         <li>
-          {/* Notion Icon */}
-          <a href="https://www.notion.so/" target="_blank" rel="noreferrer">
-            <img
-              src="https://www.notion.com/front-static/favicon.ico"
-              alt="Notion"
-              style={styles.icons}
-            />
-            Notion
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://ticktick.com/webapp/#q/all/habit"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              height="48"
-              src="https://img.icons8.com/fluency/48/tick-tick.png"
-              alt="tick-tick"
-              style={styles.icons}
-            />
-            Tic Tic
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://www.coursera.org/learn/learning-how-to-learn-youth/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              src="https://d3njjcbhbojbot.cloudfront.net/web/images/favicons/favicon-v2-32x32.png"
-              alt="Coursera"
-              style={styles.icons}
-            />
-            Learn How To Learn for Youth
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://www.coursera.org/learn/learning-how-to-learn"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Brain  style={styles.icons}/>
-            Learn How To Learn
-          </a>
-        </li>
-        <li>
-          <a href="https://flocus.com/" target="_blank" rel="noreferrer">
-            <img
-              src="https://flocus.com/assets/favicon.jpg"
-              alt="Flocus"
-              style={styles.icons}
-            />
-            Flocus
-          </a>
-        </li>
-        <li>
-          <a href="https://studytogether.com/" target="_blank" rel="noreferrer">
-            <img
-              src="https://cdn.prod.website-files.com/60890f6ac44206aef9237eb4/60bf58e7f22ec73793160127_Favicon-small.png"
-              alt="StudyTogether"
-              style={styles.icons}
-            />
-            Study Together
-          </a>
-        </li>
-        <li>
-          <a href="https://forestapp.cc" target="_blank" rel="noreferrer">
-            <img
-              src="https://www.forestapp.cc/favicon.ico"
-              alt="Forest App.. Stay focused.. Be present"
-              style={styles.icons}
-            />
-            Forest
-          </a>
-        </li>
-        <li>
-          <StudyWithMe iconStyles={styles.icons}/>
-        </li>
-
-        <li>
-          <a
-            href="https://sleeptown.seekrtech.com/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              src="https://sleeptown.seekrtech.com/img/icon_128_round.png"
-              alt="SleepTown...Build Healthy Sleep Habits"
-              style={styles.icons}
-            />
-            SleepTown
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://remindme-l.vercel.app"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              src="https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/17746265/ai_logo_1726750030_AyBzw8.png"
-              alt="RemindMe"
-              style={styles.icons}
-            />
-            RemindMe
-          </a>
+          <StudyWithMe iconStyles={ICON_STYLES} />
         </li>
       </ul>
     </details>
