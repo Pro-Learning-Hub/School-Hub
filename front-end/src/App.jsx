@@ -39,24 +39,22 @@ function App() {
     <div className="APP">
       {isLoading && <Spinner />}
       <Sidebar />
-      <header className="App-header">
-        <Routes>
-          <Route path='/login' element={<Login />} />
-          <Route path='/Register' element={<Register />} />
-          <Route path="/" element={<ProtectedLayout />}>
-            <Route index element={<Lectures />} />
-            <Route path="/lectures" element={<Lectures />} />
-            <Route path="/lectures/:lectureId" element={<Lecture />} />
-            <Route path="/lectures/new" element={<CreateNewLecture />} />
-            <Route path="/lectures/:lectureId/edit" element={<EditLectureForm />} />
-            <Route path="/announcements" element={<Announcements />} />
-            <Route path="/discussion" element={<GeneralDiscussion />} />
-            <Route path="questions/:questionId" element={<Replies />} />
-          </Route>
-          <Route path="*" element={<h1>Oops, not found!</h1>} />
-        </Routes>
+      <Routes>
+        <Route path='/login' element={<Login />} />
+        <Route path='/Register' element={<Register />} />
+        <Route path="/" element={<ProtectedLayout />}>
+          <Route index element={<Lectures />} />
+          <Route path="/lectures" element={<Lectures />} />
+          <Route path="/lectures/:lectureId" element={<Lecture />} />
+          <Route path="/lectures/new" element={<CreateNewLecture />} />
+          <Route path="/lectures/:lectureId/edit" element={<EditLectureForm />} />
+          <Route path="/announcements" element={<Announcements />} />
+          <Route path="/discussion" element={<GeneralDiscussion />} />
+          <Route path="questions/:questionId" element={<Replies />} />
+        </Route>
+        <Route path="*" element={<h1>Oops, not found!</h1>} />
+      </Routes>
       <Toaster reverseOrder={true} />
-      </header>
     </div>
   );
 }
