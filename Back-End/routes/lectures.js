@@ -56,7 +56,7 @@ router.get('/courses/:id/lectures', verifyToken, async (req, res) => {
       [courseId]
     );
 
-    const lectureFields = ['id', 'title', 'description', 'tags'].join(', ');
+    const lectureFields = ['id', 'title', 'description', 'tags', 'sectionId'].join(', ');
 
     const lectures = [];
     for (const section of sections) {
@@ -65,7 +65,12 @@ router.get('/courses/:id/lectures', verifyToken, async (req, res) => {
         ${lastFetched ? 'AND createdAt > ?' : ''} ORDER BY createdAt`,
         [section.id, ...(lastFetched ? [lastFetched] : [])],
       )
-      lectures.push({...section, lectures: sectionLectures});
+      // Add courseId to each lecture for consistency
+      const lecturesWithCourseId = sectionLectures.map(lecture => ({
+        ...lecture,
+        courseId
+      }));
+      lectures.push({...section, lectures: lecturesWithCourseId});
     };
     console.log(sections, lectures);
     // Filter empty sections
@@ -480,7 +485,7 @@ router.post('/courses/:id/lectures/diff', async (req, res) => {
 
     for (const section of dbSections) {
       const sectionLectures = await db.execute(
-        `SELECT id, title, description, tags,
+        `SELECT id, title, description, tags, sectionId,
         (updatedAt >= :lastSynced ) as isChanged
         FROM lectures WHERE sectionId = :sectionId AND createdAt <= :lastSynced`,
         { sectionId: section, lastSynced }
@@ -490,6 +495,8 @@ router.post('/courses/:id/lectures/diff', async (req, res) => {
         if (lecture.isChanged) {
           if (!result.updated[section]) result.updated[section] = [];
           delete lecture.isChanged;
+          // Add courseId for consistency
+          lecture.courseId = courseId;
           result.updated[section].push(lecture);
         }
       }
@@ -608,7 +615,7 @@ router.get('/api/lectures/search', verifyToken, async (req, res) => {
 
   try {
     const results = await db.query(
-      `SELECT id, title, description, tags, createdAt,
+      `SELECT id, title, description, tags, createdAt, sectionId, courseId,
           MATCH(title, description, tags) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
       FROM lectures
       WHERE courseId = ?
