@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { Routes, Route, Navigate, Outlet} from 'react-router-dom';
@@ -8,20 +8,23 @@ import './components/Login/css/main.css';
 import './components/Register/css/util.css';
 import './components/Register/css/main.css';
 import Spinner from './components/utilityComponents/Spinner';
-import Lectures from './components/Lectures/Lectures';
-import Announcements from './components/Announcements/Announcements'
-import GeneralDiscussion from './components/GeneralDiscussion/GeneralDiscussion';
-import Lecture from './components/Lecture/Lecture';
-import Replies from './components/Replies/Replies';
-import Login from './components/Login/Login';
-import Register from './components/Register/Register';
 import Sidebar from './components/Sidebar/sidebar';
-import CreateNewLecture from './components/CreateLectureForm/CreateLectureForm';
-import EditLectureForm from './components/EditLectureForm/EditLectureForm';
 import useConnectSocket from './hooks/socketConnectionHooks';
+import { selectIsLoggedIn } from './redux/selectors/uiSelectors';
+
+// Lazy-loaded route components for code splitting
+const Lectures = React.lazy(() => import('./components/Lectures/Lectures'));
+const Announcements = React.lazy(() => import('./components/Announcements/Announcements'));
+const GeneralDiscussion = React.lazy(() => import('./components/GeneralDiscussion/GeneralDiscussion'));
+const Lecture = React.lazy(() => import('./components/Lecture/Lecture'));
+const Replies = React.lazy(() => import('./components/Replies/Replies'));
+const Login = React.lazy(() => import('./components/Login/Login'));
+const Register = React.lazy(() => import('./components/Register/Register'));
+const CreateNewLecture = React.lazy(() => import('./components/CreateLectureForm/CreateLectureForm'));
+const EditLectureForm = React.lazy(() => import('./components/EditLectureForm/EditLectureForm'));
 
 function ProtectedLayout() {
-  const isLoggedIn = useSelector((state) => state.ui.get('isLoggedIn'));
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   if (!isLoggedIn) {
     sessionStorage.setItem('intendedPath', window.location.pathname);
     return <Navigate to="/login" replace/>
@@ -30,16 +33,31 @@ function ProtectedLayout() {
   }
 }
 
+// Loading fallback component for code splitting
+function RouteLoadingSpinner() {
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: '200px',
+      width: '100%'
+    }}>
+      <Spinner />
+    </div>
+  );
+}
+
 function App() {
   const isLoading = useSelector((state) => state.ui.get('isLoading'));
-
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   useConnectSocket();
 
   return (
     <div className="APP">
       {isLoading && <Spinner />}
-      <Sidebar />
-      <header className="App-header">
+      {isLoggedIn && <Sidebar />}
+      <Suspense fallback={<RouteLoadingSpinner />}>
         <Routes>
           <Route path='/login' element={<Login />} />
           <Route path='/Register' element={<Register />} />
@@ -55,8 +73,8 @@ function App() {
           </Route>
           <Route path="*" element={<h1>Oops, not found!</h1>} />
         </Routes>
+      </Suspense>
       <Toaster reverseOrder={true} />
-      </header>
     </div>
   );
 }

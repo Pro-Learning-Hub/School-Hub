@@ -20,6 +20,26 @@ export default function LectureEntry({
   const [showOptions, setShowOptions] = useState(false);
   const dropdownRef = useRef(null);
 
+  // Process tags to handle both string and array formats
+  const processedTags = React.useMemo(() => {
+    if (!tags) return [];
+    
+    if (typeof tags === 'string') {
+      return tags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0);
+    }
+    
+    if (Array.isArray(tags)) {
+      return tags
+        .map(tag => typeof tag === 'string' ? tag.trim() : String(tag).trim())
+        .filter(tag => tag.length > 0);
+    }
+    
+    return [];
+  }, [tags]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -111,9 +131,9 @@ export default function LectureEntry({
           )}
 
           {/* Tags */}
-          {tags && tags.length > 0 && (
+          {processedTags && processedTags.length > 0 && (
             <div className="lecture-tags">
-              {tags.map((tag, index) => (
+              {processedTags.map((tag, index) => (
                 <Tag key={`${index}-${tag}`} content={tag} />
               ))}
             </div>

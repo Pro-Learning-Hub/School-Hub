@@ -11,7 +11,7 @@ import { selectCourseId } from '../../redux/selectors/uiSelectors';
 import { useJoinRoom } from '../../hooks/socketConnectionHooks';
 import useSyncSections from '../../hooks/syncSectionsHook';
 import SearchInput from '../sharedComponents/SearchInput';
-import SectionsList from './SectionsList';
+import Sections from './Sections';
 import useSearchState from '../../hooks/useSearchState';
 import LecturesSearchList from './LecturesSearchList';
 
@@ -58,7 +58,7 @@ export default function Lectures() {
               query={searchState.debouncedQuery}
             />
           ) : (
-            <SectionsList sections={sections} isLoading={isLoading} />
+            <Sections sections={sections} isLoading={isLoading} />
           )}
         </div>
       </div>

@@ -100,6 +100,12 @@ export default function RegisterStepTwo({
       <div className="container-login100">
         <div className="wrap-login100">
           <form onSubmit={handleSubmit} className="login100-form">
+           {/* Pro Learning Hub Branding */}
+           <div className="text-center">
+             <h1 className="brand-title">Pro Learning Hub</h1>
+              <p className="brand-subtitle">All You Need In One Place</p>
+           </div>
+
            <i className="fa fa-arrow-left" aria-hidden="true"> <button onClick={() => setStep(1)} className="text-start mb-5 fs-5">Back </button></i>
           <p className='login100-form-title p-b-43'>Please provide us with your personal information</p>
  
@@ -152,7 +158,6 @@ export default function RegisterStepTwo({
               </button>
             </div>
           </form>
-          <div className="login100-more" style={{ backgroundImage: `url(/books.jpg)` }}></div>
         </div>
       </div>
     </div>

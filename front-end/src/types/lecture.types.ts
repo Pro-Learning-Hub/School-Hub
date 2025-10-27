@@ -4,9 +4,16 @@ export interface Lecture {
   id: string;
   title: string;
   description: string;
-  tags: string[];
+  tags: string[] | string;
   sectionId?: string;
   courseId?: string;
+}
+
+export interface Section {
+  id: string;
+  title: string;
+  description?: string;
+  lectures: Lecture[];
 }
 
 export interface SearchResponse {

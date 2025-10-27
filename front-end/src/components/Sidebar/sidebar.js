@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { googleLogout } from '@react-oauth/google';
@@ -6,125 +6,151 @@ import { logout } from '../../redux/actions/uiActionCreators';
 import Communities from './Communities';
 import SidebarHeader from './SidebarHeader';
 import Featured from './Featured';
+import UserProfile from './UserProfile';
 import './sidebar.css';
 
+// Navigation items configuration
+const NAVIGATION_ITEMS = [
+  {
+    to: '/',
+    icon: 'fa fa-home',
+    label: 'Home',
+  },
+  {
+    to: '/lectures',
+    icon: 'fa fa-book',
+    label: 'Lectures',
+  },
+  {
+    to: '/discussion',
+    icon: 'fa fa-comments',
+    label: 'General Forum',
+  },
+  {
+    to: '/announcements',
+    icon: 'fa fa-bullhorn',
+    label: 'Announcements',
+  },
+];
+
 /**
- * First.. This is not a good component because it's all in one place.
- * and not really a sidebar..
- * Second.. This is offcanvas.. but This has to be offcanvas only on narrow screens
- * but part of the body on wide screens
+ * Sidebar component with responsive offcanvas layout
+ * - Offcanvas on narrow screens
+ * - Fixed sidebar on wide screens
  */
 export default function Sidebar() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const dispatch = useDispatch();
-	const isLoggedIn = useSelector(state => state.ui.get('isLoggedIn'));
-
-  const handleLogout = () => {
+  const isLoggedIn = useSelector(state => state.ui.get('isLoggedIn'));
+  // Handle user logout
+  const handleLogout = useCallback(() => {
     dispatch(logout());
     googleLogout();
-  };
+  }, [dispatch]);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
-  };
+  // Toggle sidebar open/close state
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen(prev => !prev);
+  }, []);
 
+  // Close sidebar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        !event.target.closest('.offcanvas-body') &&
-        !event.target.closest('.navbar-toggler')
-      ) {
+      const isClickOnSidebar = event.target.closest('.offcanvas-body');
+      const isClickOnToggler = event.target.closest('.navbar-toggler');
+      
+      if (!isClickOnSidebar && !isClickOnToggler) {
         setSidebarOpen(false);
       }
     };
 
     document.addEventListener('click', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
+
+  // Render navigation links
+  const renderNavigationLinks = () => (
+    <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
+      {NAVIGATION_ITEMS.map(({ to, icon, label }) => (
+        <li key={to} className="nav-item">
+          <Link className="nav-link text-white" to={to}>
+            <i className={icon}></i> {label}
+          </Link>
+        </li>
+      ))}
+      
+      {/* Additional Components */}
+      <li className="nav-item">
+        <Communities />
+      </li>
+      <li className="nav-item">
+        <Featured />
+      </li>
+    </ul>
+  );
+
+  // Render logout section with user profile
+  const renderLogoutSection = () => (
+    <>
+      <UserProfile />
+      <div className="offcanvas-footer">
+        <ul>
+          <li>
+            <button
+              type="button"
+              className="btn btn-link text-white w-100"
+              onClick={handleLogout}
+              aria-label="Logout"
+            >
+              <i className="fa fa-sign-out"></i> Logout
+            </button>
+          </li>
+        </ul>
+      </div>
+    </>
+  );
 
   return (
     <nav className="navbar navbar-dark bgd-style fixed-top position-relative">
       <div className="container-fluid">
-        {/* Hamburger Button */}
-        {isLoggedIn && 
+        {/* Hamburger Menu Button */}
+        {isLoggedIn && (
           <button
             className="navbar-toggler me-auto"
             type="button"
             onClick={toggleSidebar}
             aria-controls="offcanvasDarkNavbar"
+            aria-expanded={isSidebarOpen}
             aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-        }
+        )}
 
-        {/* Title moved to the right */}
+        {/* Brand Title */}
         <Link className="navbar-brand ms-auto" to="/">
           Pro Learning Hub
         </Link>
 
         {/* Offcanvas Sidebar */}
         <div
-          className={`offcanvas offcanvas-start bgd-style ${
-            isSidebarOpen ? 'show' : ''
-          }`}
+          className={`offcanvas offcanvas-start bgd-style ${isSidebarOpen ? 'show' : ''}`}
           tabIndex="-1"
           id="offcanvasDarkNavbar"
           aria-labelledby="offcanvasDarkNavbarLabel"
         >
-          {/* I dont' know bootstrap and I dont' have time for it now at all... Save me Timmy */}
-
+          {/* Sidebar Header */}
           <SidebarHeader toggleSidebar={toggleSidebar} />
+          
           <hr />
+          
+          {/* Sidebar Body */}
           <div className="offcanvas-body">
-            <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
-              {/* Sidebar Navigation Links */}
-              <li className="nav-item">
-                <Link className="nav-link text-white" to="/">
-                  <i className="fa fa-home"></i> Home
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link text-white" to="/lectures">
-                  <i className="fa fa-book"></i> Lectures
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link text-white" to="/discussion">
-                  <i className="fa fa-comments"></i> General Forum
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link text-white" to="/announcements">
-                  <i className="fa fa-bullhorn"></i> Announcements
-                </Link>
-              </li>
-              {/* Coruse links */}
-              <li className="nav-item">
-                <Communities />
-              </li>
-              <li className="nav-item">
-                <Featured />
-              </li>
-            </ul>
+            {renderNavigationLinks()}
           </div>
 
-          <div className="offcanvas-footer">
-            <ul>
-              <li>
-                <button
-                  type="button"
-                  className="btn btn-link text-white w-100"
-                  onClick={handleLogout}
-                >
-                  <i className="fa fa-sign-out"></i> Logout
-                </button>
-              </li>
-            </ul>
-          </div>
+          {/* Sidebar Footer */}
+          {renderLogoutSection()}
         </div>
       </div>
     </nav>

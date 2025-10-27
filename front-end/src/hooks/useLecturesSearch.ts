@@ -1,10 +1,12 @@
 import { useState, useTransition, useEffect } from "react";
+import { useSelector } from 'react-redux';
 import useDebounceValue from "./useDebounceValue.hook";
 import useFetch from "./useFetch.hook";
 import { DOMAIN } from '../utils/constants';
 // @ts-ignore
 import { getToken as _getToken } from "../utils/utilFunctions";
 import { Lecture, SearchResponse } from '../types/lecture.types';
+import { selectCourseId } from '../redux/selectors/uiSelectors';
 
 const getToken = _getToken as (type: string) => string;
 
@@ -20,19 +22,22 @@ export default function useFetchResults(query: string): UseLecturesSearchReturn 
   const [searchResults, setSearchResults] = useState<Lecture[]>([]);
   const [isPending, startTransition] = useTransition();
   
+  // Get courseId from Redux state instead of hardcoding
+  const courseId = useSelector(selectCourseId);
+  
   const debouncedQuery = useDebounceValue(query, 300);
   const encodedQuery = encodeURIComponent(debouncedQuery);
   
   const { loading, value, error } = useFetch<SearchResponse>(
-    debouncedQuery?.trim()
-      ? `${DOMAIN}/api/lectures/search?courseId=${'test-course'}&query=${encodedQuery}`
+    debouncedQuery?.trim() && courseId
+      ? `${DOMAIN}/api/lectures/search?courseId=${courseId}&query=${encodedQuery}`
       : null, // null URL will prevent the fetch
     {
       headers: {
         Authorization: `Bearer ${getToken('accessToken')}`
       }
     },
-    [debouncedQuery]
+    [debouncedQuery, courseId]
   );
 
   useEffect(() => {
