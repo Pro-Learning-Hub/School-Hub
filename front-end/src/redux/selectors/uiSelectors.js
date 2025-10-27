@@ -3,3 +3,4 @@ export const selectUserId = (state) => state.ui.getIn(['user', 'id']);
 export const selectUser = (state) => state.ui.get('user');
 export const selectCourseId = (state) => state.ui.getIn(['course', 'id']);
 export const selectIsSocketReady = (state) => state.ui.get('isSocketReady');
+export const selectIsLoggedIn = (state) => state.ui.get('isLoggedIn');

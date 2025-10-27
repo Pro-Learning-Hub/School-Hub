@@ -10,6 +10,7 @@ import './components/Register/css/main.css';
 import Spinner from './components/utilityComponents/Spinner';
 import Sidebar from './components/Sidebar/sidebar';
 import useConnectSocket from './hooks/socketConnectionHooks';
+import { selectIsLoggedIn } from './redux/selectors/uiSelectors';
 
 // Lazy-loaded route components for code splitting
 const Lectures = React.lazy(() => import('./components/Lectures/Lectures'));
@@ -23,7 +24,7 @@ const CreateNewLecture = React.lazy(() => import('./components/CreateLectureForm
 const EditLectureForm = React.lazy(() => import('./components/EditLectureForm/EditLectureForm'));
 
 function ProtectedLayout() {
-  const isLoggedIn = useSelector((state) => state.ui.get('isLoggedIn'));
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   if (!isLoggedIn) {
     sessionStorage.setItem('intendedPath', window.location.pathname);
     return <Navigate to="/login" replace/>
@@ -49,7 +50,6 @@ function RouteLoadingSpinner() {
 
 function App() {
   const isLoading = useSelector((state) => state.ui.get('isLoading'));
-
   useConnectSocket();
 
   return (
