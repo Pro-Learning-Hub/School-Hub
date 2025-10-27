@@ -53,6 +53,12 @@ export default function RegisterStepOne({ setStep, userData, handleInputChange }
       <div className="container-login100">
         <div className="wrap-login100">
           <form className="login100-form validate-form" onSubmit={handleSubmit}>
+            {/* Pro Learning Hub Branding */}
+            <div className="text-center">
+              <h1 className="brand-title">Pro Learning Hub</h1>
+              <p className="brand-subtitle">All You Need In One Place</p>
+            </div>
+
             <span className="login100-form-title p-b-43">
               Create a new account
             </span>
@@ -135,7 +141,6 @@ export default function RegisterStepOne({ setStep, userData, handleInputChange }
               />
             </div>
           </form>
-          <div className="login100-more" style={{ backgroundImage: `url(/books.jpg)` }}></div>
         </div>
       </div>
     </div>
