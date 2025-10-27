@@ -6,6 +6,7 @@ import { logout } from '../../redux/actions/uiActionCreators';
 import Communities from './Communities';
 import SidebarHeader from './SidebarHeader';
 import Featured from './Featured';
+import UserProfile from './UserProfile';
 import './sidebar.css';
 
 // Navigation items configuration
@@ -89,22 +90,25 @@ export default function Sidebar() {
     </ul>
   );
 
-  // Render logout button
-  const renderLogoutButton = () => (
-    <div className="offcanvas-footer">
-      <ul>
-        <li>
-          <button
-            type="button"
-            className="btn btn-link text-white w-100"
-            onClick={handleLogout}
-            aria-label="Logout"
-          >
-            <i className="fa fa-sign-out"></i> Logout
-          </button>
-        </li>
-      </ul>
-    </div>
+  // Render logout section with user profile
+  const renderLogoutSection = () => (
+    <>
+      <UserProfile />
+      <div className="offcanvas-footer">
+        <ul>
+          <li>
+            <button
+              type="button"
+              className="btn btn-link text-white w-100"
+              onClick={handleLogout}
+              aria-label="Logout"
+            >
+              <i className="fa fa-sign-out"></i> Logout
+            </button>
+          </li>
+        </ul>
+      </div>
+    </>
   );
 
   return (
@@ -147,7 +151,7 @@ export default function Sidebar() {
           </div>
 
           {/* Sidebar Footer */}
-          {renderLogoutButton()}
+          {renderLogoutSection()}
         </div>
       </div>
     </nav>
