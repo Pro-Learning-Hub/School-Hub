@@ -50,12 +50,13 @@ function RouteLoadingSpinner() {
 
 function App() {
   const isLoading = useSelector((state) => state.ui.get('isLoading'));
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   useConnectSocket();
 
   return (
     <div className="APP">
       {isLoading && <Spinner />}
-      <Sidebar />
+      {isLoggedIn && <Sidebar />}
       <Suspense fallback={<RouteLoadingSpinner />}>
         <Routes>
           <Route path='/login' element={<Login />} />

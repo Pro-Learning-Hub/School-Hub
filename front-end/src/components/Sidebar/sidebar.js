@@ -42,7 +42,6 @@ export default function Sidebar() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(state => state.ui.get('isLoggedIn'));
-
   // Handle user logout
   const handleLogout = useCallback(() => {
     dispatch(logout());
