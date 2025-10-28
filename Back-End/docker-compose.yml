@@ -14,12 +14,14 @@ services:
       - TZ=UTC
     command: --port=${DB_PORT} --log-bin-trust-function-creators=1
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-P", "${DB_PORT}", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-P", "${DB_PORT}", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 10
       start_period: 30s
-  
+    networks:
+      - backend-network
+
   backend:
     # build: .
     image: loayalsaid1/prolearninghub:${BACKEND_IMAGE_TAG-latest}
@@ -38,25 +40,39 @@ services:
       - DB_NAME=${DB_NAME}
       - USE_HTTPS=${USE_HTTPS}
       - DB_PORT=${DB_PORT}
+      - VIRTUAL_HOST=prolearninghubtest.loay.me
+      - LETSENCRYPT_HOST=prolearninghubtest.loay.me
+      - YT_DOWNLOAD_SERVICE_URL=http://yt-downloader:3002
+
     depends_on:
       db:
-        condition: 
-
-  webserver:
-    image: nginx:latest
-    ports:
-      - 80:80
-      - 443:443
+        condition: service_healthy
+    networks:
+      - nginx-proxy
+      - backend-network
+  yt-downloader:
+    image: loayalsaid1/prolearninghub:${YT_DOWNLOADER_IMAGE_TAG}
+    container_name: yt-downloader-test
     restart: always
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - MAX_CONCURRENT_TRANSCRIPT_REQUESTS=10
+      - MAX_CONCURRENT_DOWNLOADS=4
+      - DOWNLOAD_DIR=/tmp/downloads
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
     volumes:
-      - ./nginx/conf/:/etc/nginx/conf.d/:ro
-      - ./certbot/www/:/var/www/certbot/:ro
-      - ./certbot/conf/:/etc/nginx/ssl/:ro
+      - yt-downloader-downloads:/tmp/downloads
+    networks:
+      - backend-network
+    depends_on:
+      - backend
 
-  certbot:
-    image: certbot/certbot:latest
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
 volumes:
   mysql-test-data:
+  yt-downloader-downloads:
+networks:
+  backend-network:
+  nginx-proxy:
+    external: true
