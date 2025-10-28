@@ -343,7 +343,7 @@ class YouTubeDownloadService {
         "-f", "18/best[height<=720]",
         "--get-url",
         "--no-playlist",
-        // "--cookies", this.cookiesPath
+        "--cookies", this.cookiesPath
       ], { encoding: "utf8" }, (error, stdout) => {
         if (error) return reject(error);
         const url = stdout.trim().split("\n")[0];
