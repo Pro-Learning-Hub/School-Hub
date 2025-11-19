@@ -1,0 +1,58 @@
+/* Download component styles */
+.downloading {
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  color: #6c757d !important;
+  position: relative;
+}
+
+.downloading::after {
+  content: " ...";
+  animation: dots 1.5s infinite;
+  font-style: italic;
+}
+
+@keyframes dots {
+  0%, 20% {
+    content: " ";
+  }
+  40% {
+    content: " .";
+  }
+  60% {
+    content: " ..";
+  }
+  80%, 100% {
+    content: " ...";
+  }
+}
+
+/* Loading state for download links */
+.lecture-download-loading {
+  color: #6c757d !important;
+  font-style: italic;
+}
+
+.lecture-download-error {
+  color: #dc3545 !important;
+}
+
+.lecture-download-success {
+  color: #28a745 !important;
+}
+
+/* Override any bootstrap or global link styles */
+.lecture-resource-link.downloading,
+.lecture-nested-list .downloading {
+  background-color: transparent !important;
+  text-decoration: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.lecture-resource-link.downloading:hover,
+.lecture-nested-list .downloading:hover {
+  padding-left: var(--lecture-spacing-md, 1rem) !important;
+  transform: none !important;
+}

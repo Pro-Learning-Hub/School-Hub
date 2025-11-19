@@ -52,7 +52,7 @@ export function formLogin(email, password, courseId, isAdmin) {
 
 export function googleLogin(idToken, courseId, isAdmin) {
   const url = isAdmin
-    ? `${DOMAIN}/auth/admin/oauth/google/`
+    ? `${DOMAIN}/auth/admin/oauth/google`
     : `${DOMAIN}/auth/oauth/google`
   const request = new Request(url, {
     method: 'POST',

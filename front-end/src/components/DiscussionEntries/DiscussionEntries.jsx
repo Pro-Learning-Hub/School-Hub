@@ -24,7 +24,7 @@ export default function DiscussionEntries({ entries, chunkSize, isLecture }) {
           <p>Feel free to add one...</p>
         </div>
       ) : (
-        <div className="discussion-list">
+        <div className="discussion-list h-[500px] overflow-y-auto">
           {entries.slice(0, limit).map((entry, index) => (
             <DiscussionEntry
               key={index}

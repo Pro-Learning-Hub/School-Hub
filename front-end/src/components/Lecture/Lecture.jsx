@@ -7,6 +7,8 @@ import LectureDiscussion from '../LectureDiscussion/LectureDiscussion';
 import { useParams } from 'react-router-dom';
 import { useJoinRoom } from '../../hooks/socketConnectionHooks';
 import useSyncLectureEntry from '../../hooks/syncLectureEntryHook';
+import DownloadLectureLink from './DownloadLectureLink';
+import './Lecture.css';
 
 export default function Lecture() {
   const { lectureId } = useParams();
@@ -54,76 +56,132 @@ export default function Lecture() {
       {isLoading ? (
         <Loading />
       ) : !lectureData ? (
-        <h1 className="text-center text-danger">Lecture Not Found</h1>
+        <div className="lecture-error">
+          <h1>Lecture Not Found</h1>
+          <p>The requested lecture could not be found or has been removed.</p>
+        </div>
       ) : (
-        <div className="container my-5">
+        <div className="container lecture-container">
           <div className="row justify-content-end">
-            <div className="col-lg-9 col-md-8 mb-4">
-              <h1 className="text-primary mb-3 mt-5">{lectureData.get('title')}</h1>
-              <p className="text-secondary p-3 fs-4">{lectureData.get('description')}</p>
+            <div className="col-lg-9 col-md-8 lecture-content lecture-fade-in">
+              <div className="lecture-header">
+                <h1 className="lecture-title">{lectureData.get('title')}</h1>
+                <p className="lecture-description">
+                  {lectureData.get('description')}
+                </p>
+              </div>
 
               {/* YouTube Video */}
-              <div className="embed-responsive embed-responsive-16by9 mb-4">
+              <div className="lecture-video-container">
                 <iframe
-                  className="embed-responsive-item w-100"
+                  className="lecture-video-iframe"
                   title={lectureData.get('title')}
                   src={`https://www.youtube.com/embed/${getVideoId()}`}
-                  style={{ height: '350px' }}
-                ></iframe>
+                  allowFullScreen
+                />
               </div>
 
               {/* Resources Section */}
-              <details className="mb-3">
-                <summary className="h5">Lecture Resources</summary>
-                <ul className="list-group list-group-flush">
-                  <li className="list-group-item">
-                    <a href={lectureData.get('audioLink')} target="_blank" rel="noopener noreferrer">Audio</a>
+              <details className="lecture-section">
+                <summary>Lecture Resources</summary>
+                <ul className="lecture-resources-list">
+                  <li className="lecture-resource-item">
+                    <DownloadLectureLink 
+                      videoUrl={lectureData.get('videoLink')} 
+                      type="audio"
+                      className="lecture-resource-link"
+                    >
+                      Audio
+                    </DownloadLectureLink>
                   </li>
-                  <li className="list-group-item">
-                    <a href={lectureData.get('notes')} target="_blank" rel="noopener noreferrer">Notes</a>
+                  <li className="lecture-resource-item">
+                    <a 
+                      href={lectureData.get('notes')} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="lecture-resource-link"
+                    >
+                      Notes
+                    </a>
                   </li>
-                  <li className="list-group-item">
-                    <a href={lectureData.get('slides')} target="_blank" rel="noopener noreferrer">Slides</a>
+                  <li className="lecture-resource-item">
+                    <a 
+                      href={lectureData.get('slides')} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="lecture-resource-link"
+                    >
+                      Slides
+                    </a>
                   </li>
-                  <details>
-                    <summary className="list-group-item">Demos</summary>
-                    {getDemos().length ? (
-                      <ul className="ps-4 list-group-item">{getDemos()}</ul>
-                    ) : (
-                      <p className="text-muted">No Demos available</p>
-                    )}
-                  </details>
-                  <li className="list-group-item">
-                    <a href={lectureData.get('transcript')} target="_blank" rel="noopener noreferrer">Transcript</a>
+                  <li className="lecture-resource-item">
+                    <details className="lecture-nested-section">
+                      <summary>Demos</summary>
+                      {getDemos().length ? (
+                        <ul className="lecture-nested-list">{getDemos()}</ul>
+                      ) : (
+                        <div className="lecture-empty-state">No Demos available</div>
+                      )}
+                    </details>
                   </li>
-                  <li className="list-group-item">
-                    <a href={lectureData.get('subtitles')} target="_blank" rel="noopener noreferrer">Subtitles</a>
+                  <li className="lecture-resource-item">
+                    <DownloadLectureLink 
+                      videoUrl={lectureData.get('videoLink')} 
+                      type="transcript"
+                      className="lecture-resource-link"
+                    >
+                      Transcript
+                    </DownloadLectureLink>
+                  </li>
+                  <li className="lecture-resource-item">
+                    <DownloadLectureLink 
+                      videoUrl={lectureData.get('videoLink')} 
+                      type="subtitles"
+                      className="lecture-resource-link"
+                    >
+                      Subtitles
+                    </DownloadLectureLink>
+                  </li>
+                  <li className="lecture-resource-item">
+                    <details className="lecture-nested-section">
+                      <summary>Video</summary>
+                      <ul className="lecture-nested-list">
+                        <li>
+                          <DownloadLectureLink videoUrl={lectureData.get('videoLink')} type="video">
+                            Video [MP4]
+                          </DownloadLectureLink>
+                        </li>
+                        <li>
+                          <a href={lectureData.get('videoLink')}>Youtube</a>
+                        </li>
+                      </ul>
+                    </details>
                   </li>
                 </ul>
               </details>
 
               {/* Extras Section */}
-              <details className="mb-3">
-                <summary className="h5">Shorts & Extras</summary>
+              <details className="lecture-section">
+                <summary>Shorts & Extras</summary>
                 {getShorts().length ? (
-                  <ul className="list-group list-group-item ps-4">{getShorts()}</ul>
+                  <ul className="lecture-nested-list">{getShorts()}</ul>
                 ) : (
-                  <p className="text-muted">No Shorts available</p>
+                  <div className="lecture-empty-state">No Shorts available</div>
                 )}
               </details>
 
               {/* Quizzes Section */}
-              <details className="mb-3">
-                <summary className="h5">Quizzes & Problem Sets</summary>
+              <details className="lecture-section">
+                <summary>Quizzes & Problem Sets</summary>
                 {getQuizzes().length ? (
-                  <ul className="list-group list-group-item list-group-item ps-4">{getQuizzes()}</ul>
+                  <ul className="lecture-nested-list">{getQuizzes()}</ul>
                 ) : (
-                  <p className="text-muted">No Quizzes available</p>
+                  <div className="lecture-empty-state">No Quizzes available</div>
                 )}
               </details>
 
               {/* Discussion Section */}
-              <div className="mt-4">
+              <div className="lecture-discussion">
                 <LectureDiscussion lectureId={lectureId} />
               </div>
             </div>

@@ -1,15 +1,6 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const {
-  mockComments,
-  mockAnnouncements,
-  mockReplies,
-  question,
-  mockDiscussion,
-
-  mockSections,
-  repliesList,
-} = require('../mockData');
+const { Readable } = require("stream");
 const db = require('../connect');
 const { verifyToken } = require('../middlewares/authMiddlewares');
 const { verify } = require('jsonwebtoken');
@@ -18,7 +9,9 @@ const {
   isUserEnroledInCourse,
   getCurrentTimeInDBFormat,
 } = require('../helperFunctions');
+
 const router = express.Router();
+
 
 // Get all lectures for a course split on sections
 // Here nothing much to be done regardig the token
@@ -63,16 +56,21 @@ router.get('/courses/:id/lectures', verifyToken, async (req, res) => {
       [courseId]
     );
 
-    const lectureFields = ['id', 'title', 'description', 'tags'].join(', ');
+    const lectureFields = ['id', 'title', 'description', 'tags', 'sectionId'].join(', ');
 
     const lectures = [];
     for (const section of sections) {
       const sectionLectures = await db.execute(
         `SELECT ${lectureFields} FROM lectures WHERE sectionId = ? 
-        ${lastFetched ? 'AND createdAt > ?' : ''}`,
+        ${lastFetched ? 'AND createdAt > ?' : ''} ORDER BY createdAt`,
         [section.id, ...(lastFetched ? [lastFetched] : [])],
       )
-      lectures.push({...section, lectures: sectionLectures});
+      // Add courseId to each lecture for consistency
+      const lecturesWithCourseId = sectionLectures.map(lecture => ({
+        ...lecture,
+        courseId
+      }));
+      lectures.push({...section, lectures: lecturesWithCourseId});
     };
     console.log(sections, lectures);
     // Filter empty sections
@@ -136,7 +134,7 @@ router.get(
 
     const getResource = async (lectureId, type) => {
       return await db.execute(
-          'SELECT title, url FROM lectureResources WHERE lectureId = ? AND type = ?',
+          'SELECT title, url FROM lectureResources WHERE lectureId = ? AND type = ? ORDER BY createdAt',
           [lectureId, type]
       );
     };
@@ -487,7 +485,7 @@ router.post('/courses/:id/lectures/diff', async (req, res) => {
 
     for (const section of dbSections) {
       const sectionLectures = await db.execute(
-        `SELECT id, title, description, tags,
+        `SELECT id, title, description, tags, sectionId,
         (updatedAt >= :lastSynced ) as isChanged
         FROM lectures WHERE sectionId = :sectionId AND createdAt <= :lastSynced`,
         { sectionId: section, lastSynced }
@@ -497,6 +495,8 @@ router.post('/courses/:id/lectures/diff', async (req, res) => {
         if (lecture.isChanged) {
           if (!result.updated[section]) result.updated[section] = [];
           delete lecture.isChanged;
+          // Add courseId for consistency
+          lecture.courseId = courseId;
           result.updated[section].push(lecture);
         }
       }
@@ -524,4 +524,122 @@ router.post('/courses/:id/lectures/diff', async (req, res) => {
   }
 });
 
+router.get('/lectures/media', async (req, res) => {
+  const { url, type } = req.query;
+  if (!url) return res.status(400).send("Missing ?url=");
+  if (!type) return res.status(400).send("Missing ?type=");
+
+  const isAudioOnly = req.query.type === 'audio';
+  
+  const controller = new AbortController();
+  const { signal } = controller;
+
+  const timeout = 1000 * 60 * 10; // 10 minutes for mp3 
+
+  req.timeout = timeout;
+  try {
+    const downloadResponse = await fetch(
+      `${process.env.YT_DOWNLOAD_SERVICE_URL}/download?url=${encodeURIComponent(url)}&isAudioOnly=${isAudioOnly}`,
+      { timeout, signal }
+    );
+
+    res.setHeader('Content-Type', downloadResponse.headers.get('Content-Type'));
+    res.setHeader('Content-Disposition', downloadResponse.headers.get('Content-Disposition'));
+
+    const stream = Readable.fromWeb(downloadResponse.body);
+
+    stream.on('error', (err) => {
+      if (err.name === 'AbortError') {
+        console.log("Stream aborted");
+      } else {
+        console.error("Stream error:", err);
+      }
+      res.destroy(err); // end the client response too
+    });
+
+    // Pipe data to client
+    stream.pipe(res);
+
+
+    req.on("aborted", () => {
+      console.log("/proxy =>  Request aborted");
+      controller.abort();
+    });
+  } catch (err) {
+    console.error("DownloadHandler Error:", err);
+    res.status(500).send("Something went wrong");
+  }
+})
+
+router.get('/lectures/transcript', async (req, res) => {
+  const { url, format } = req.query;
+  if (!url) return res.status(400).send("Missing ?url=");
+
+  try {
+    const transcriptResponse = await fetch(
+      `${process.env.YT_DOWNLOAD_SERVICE_URL}/transcript?url=${encodeURIComponent(url)}&format=${encodeURIComponent(format)}`,
+    );
+
+    if (!transcriptResponse.ok) {
+      throw new Error("Failed to fetch transcript");
+    }
+
+    res.setHeader('Content-Type', transcriptResponse.headers.get('Content-Type'));
+    res.setHeader('Content-Disposition', transcriptResponse.headers.get('Content-Disposition'));
+    res.setHeader('X-File-Name', transcriptResponse.headers.get('X-File-Name'));
+    
+    res.setHeader('Access-Control-Expose-Headers', 'X-File-Name');
+    
+    Readable.fromWeb(transcriptResponse.body).pipe(res);
+  } catch (err) {
+    console.error("TranscriptHandler Error:", err);
+    res.status(500).send("Something went wrong");
+  }
+})
+
+router.get('/api/lectures/search', verifyToken, async (req, res) => {
+  const { courseId, query } = req.query;
+  if (!courseId || !query) 
+    return res.status(400).json({ message: 'Invalid search parameters. Expecting (courseId & query)' });
+  
+  const decodedQuery = decodeURIComponent(query);
+
+  const [course] = await db.query(
+    `SELECT 1 FROM courses WHERE id = ?`,
+    [courseId]
+  );
+  if (!course) {
+    return res.status(404).json({ message: `Course not found` });
+  }
+
+
+  try {
+    const results = await db.query(
+      `SELECT id, title, description, tags, createdAt, sectionId, courseId,
+          MATCH(title, description, tags) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
+      FROM lectures
+      WHERE courseId = ?
+        AND MATCH(title, description, tags) AGAINST(? IN NATURAL LANGUAGE MODE) > 0.25
+      ORDER BY relevance DESC;`,
+      [decodedQuery, courseId, decodedQuery ]
+    );
+
+    // Normalize the tags from a string to an array
+    results.forEach((lecture) => {  
+      lecture.tags = lecture.tags
+        ? lecture.tags.split(',').map(tag => tag.trim())
+        : [];
+    });
+    
+    res.status(200).json({
+      results,
+      total: results.length,
+      query: decodedQuery,
+      context: { courseId },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error searching lectures' });
+  }
+});
 module.exports = router;

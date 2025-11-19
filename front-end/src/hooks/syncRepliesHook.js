@@ -22,7 +22,7 @@ export default function useSyncReplies(questionId) {
 
 	useEffect(() => {
 		dispatch(syncExistingReplies(questionId));
-	}, [dispatch])
+	}, [dispatch, questionId])
 
 	useEffect(() => {
 		if (socket) {

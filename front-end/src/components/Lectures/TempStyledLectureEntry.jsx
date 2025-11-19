@@ -31,7 +31,7 @@ export default function TempStyledLectureEntry({ lecture, sectionId }) {
           >
             {lecture.title}
           </Link>
-          <p className="mb-0 text-muted">{lecture.description}</p>
+          <p className="mb-0 text-muted lh-base">{lecture.description}</p>
         </div>
       </div>
       {userRole !== 'student' && (

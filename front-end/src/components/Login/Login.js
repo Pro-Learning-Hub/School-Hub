@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { User, University } from 'lucide-react';
 import { formLogin, googleLogin, loginFailure } from '../../redux/actions/uiActionCreators';
 import { GoogleLogin } from '@react-oauth/google';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import $ from 'jquery';
 import { selectCourseId } from '../../redux/selectors/uiSelectors';
 
@@ -118,8 +118,14 @@ export default function Login({ setType }) {
                 <div className="container-login100">
                     <div className="wrap-login100">
                         <form className="login100-form validate-form" onSubmit={handleSubmit}>
+                            {/* Pro Learning Hub Branding */}
+                            <div className="text-center">
+                                <h1 className="brand-title">Pro Learning Hub</h1>
+                                <p className="brand-subtitle">All You Need In One Place</p>
+                            </div>
+
                             {/* Lecturer/Student Toggle Buttons */}
-                            <div className="toggle-buttons text-center mb-5">
+                            <div className="toggle-buttons text-center mb-3">
                                 <button 
                                     type="button" 
                                     className="toggle-button" 
@@ -150,7 +156,7 @@ export default function Login({ setType }) {
                             </div>
 
                             <span className="login100-form-title p-b-43">
-                                Login to continue as {adminLogin ? 'Lecturer' : 'student'}
+                                Login to continue as {adminLogin ? 'Lecturer' : 'Student'}
                             </span>
 
                             {/* Email Input */}
@@ -169,9 +175,9 @@ export default function Login({ setType }) {
 
                             {/* Forgot Password Link */}
                             <div className="flex-sb-m w-full p-t-3 p-b-32 justify-content-end">
-                                <a href="#" className="txt1">
+                                <button className="txt1" style={{ textDecoration: 'underline' }}>
                                     Forgot Password?
-                                </a>
+                                </button>
                             </div>
 
                             {/* Login Button */}
@@ -183,15 +189,15 @@ export default function Login({ setType }) {
 
                             {/* Create New Account Link */}
                             <div className="p-2 mt-3 text-center p-t-15">
-                                <a href="#" className="txt1" onClick={() => navigate('/register')}>
+                                <Link to="/register" className="txt1">
                                     Create new Account
-                                </a>
+                                </Link>
                             </div>
 
                             {/* Social Login */}
                             <div className="text-center p-t-26 p-b-20">
                                 <span className="txt2">
-                                    or sign up using
+                                    or Log in using
                                 </span>
                             </div>
 
@@ -210,9 +216,6 @@ export default function Login({ setType }) {
                                 />
                             </div>
                         </form>
-
-                        {/* Background Image */}
-                        <div className="login100-more" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/books.jpg)` }}></div>
                     </div>
                 </div>
             </div>

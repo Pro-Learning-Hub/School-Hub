@@ -1,5 +1,392 @@
-.bgd-style{
-    background-color: #6657DF !important;
-    color: #ffffff;
+/* ========================================
+   Sidebar Styles
+   ======================================== */
+
+/* Base theme colors */
+.bgd-style {
+  background-color: #607D8B !important;
+  color: #ffffff;
 }
 
+/* ========================================
+   Navbar Styles
+   ======================================== */
+
+.navbar a {
+  color: #eee;
+  transition: color 0.2s ease-in-out;
+}
+
+.navbar a:hover {
+  color: #212121;
+}
+
+/* ========================================
+   Sidebar Header Styles
+   ======================================== */
+
+.course-logo {
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.instructor-info {
+  font-size: 0.85rem;
+  line-height: 1.3;
+  padding: 0.5rem 0;
+}
+
+.instructor-name,
+.instructor-email {
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.instructor-name:hover,
+.instructor-email:hover {
+  color: #e3f2fd;
+  text-decoration: underline;
+}
+
+.social-links a {
+  color: #ffffff;
+  transition: color 0.2s ease-in-out;
+  margin-right: 0.4rem;
+}
+
+.social-links a:hover {
+  color: #e3f2fd;
+}
+
+/* ========================================
+   Navigation Styles
+   ======================================== */
+
+.nav-link {
+  border-radius: 4px;
+  margin-bottom: 2px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link i {
+  width: 18px;
+  text-align: center;
+  margin-right: 6px;
+  font-size: 0.85rem;
+}
+
+/* ========================================
+   Details/Summary Styles
+   ======================================== */
+
+.navbar details summary {
+  cursor: pointer;
+  padding: 0.4rem 0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.navbar details summary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar details[open] summary {
+  margin-bottom: 0.4rem;
+}
+
+/* ========================================
+   Community and Featured Links
+   ======================================== */
+
+.fa-ul {
+  margin-left: 1.2rem;
+}
+
+.fa-ul li {
+  margin-bottom: 2px;
+  font-size: 0.85rem;
+}
+
+.fa-ul a {
+  color: #ffffff;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.fa-ul a:hover {
+  color: #e3f2fd;
+  text-decoration: underline;
+}
+
+/* Featured links specific styling */
+.navbar details[open] > ul > li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.3rem;
+  padding: 0.2rem 0;
+  font-size: 0.85rem;
+}
+
+.navbar details[open] > ul > li img,
+.navbar details[open] > ul > li svg {
+  margin-right: 0.5rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ========================================
+   Scrollbar Styles
+   ======================================== */
+
+/* Custom scrollbar for sidebar body */
+.offcanvas-body {
+  /* Ensure scrollbar is always visible for consistency */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1rem;
+}
+
+.offcanvas-body .navbar-nav {
+  gap: 0.1rem;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.offcanvas-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.offcanvas-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.offcanvas-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.offcanvas-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.offcanvas-body::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Modal scrollbar styling to match */
+.modal-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(96, 125, 139, 0.3) rgba(96, 125, 139, 0.1);
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: rgba(96, 125, 139, 0.1);
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(96, 125, 139, 0.3);
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(96, 125, 139, 0.5);
+}
+
+/* ========================================
+   User Profile Styles
+   ======================================== */
+
+.user-profile {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-profile-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.user-profile-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Allow text truncation */
+}
+
+.user-profile-name {
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-profile-role {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-transform: capitalize;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========================================
+   Footer Styles
+   ======================================== */
+
+.offcanvas-footer {
+  padding: 0.75rem 1rem;
+}
+
+.offcanvas-footer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.offcanvas-footer .btn-link {
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.offcanvas-footer .btn-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 768px) {
+  .course-logo {
+    width: 8rem !important;
+  }
+  
+  .instructor-info {
+    font-size: 0.8rem;
+    padding: 0.4rem 0;
+  }
+  
+  .social-links a {
+    margin-right: 0.3rem;
+  }
+  
+  .nav-link {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.85rem;
+  }
+  
+  .nav-link i {
+    width: 16px;
+    margin-right: 4px;
+    font-size: 0.8rem;
+  }
+  
+  .navbar details summary {
+    font-size: 0.85rem;
+    padding: 0.3rem 0;
+  }
+  
+  .fa-ul li,
+  .navbar details[open] > ul > li {
+    font-size: 0.8rem;
+  }
+  
+  .user-profile {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .user-profile-content {
+    gap: 0.5rem;
+  }
+  
+  .user-profile-image {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .user-profile-name {
+    font-size: 0.85rem;
+  }
+  
+  .user-profile-role {
+    font-size: 0.7rem;
+  }
+}
+
+/* ========================================
+   Modal Enhancements
+   ======================================== */
+
+.modal-content {
+  border-radius: 8px;
+}
+
+.modal-header {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+  border-top: 1px solid #dee2e6;
+}
+
+/* Study with me modal specific */
+.modal-body iframe {
+  border-radius: 8px;
+}
+
+/* ========================================
+   Accessibility Improvements
+   ======================================== */
+
+.nav-link:focus,
+.btn:focus,
+.navbar details summary:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

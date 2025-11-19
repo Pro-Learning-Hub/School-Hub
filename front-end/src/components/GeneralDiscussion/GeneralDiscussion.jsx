@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../utilityComponents/Loading';
-import SearchField from '../sharedComponents/SearchField';
 import DiscussionEntryEditor from '../DiscussionEntries/DiscussionEntryEditor';
 import DiscussionEntries from '../DiscussionEntries/DiscussionEntries';
+import QuestionsSearchResults from '../Questions/QuestionsSearchResults';
+import SearchInput from '../sharedComponents/SearchInput';
+import '../Lectures/Lectures.css';
 import { addGeneralDiscussionEntry, getGeneralDiscussion } from '../../redux/actions/discussionsThunks';
 import {
   selectCourseGeneralDiscussion,
@@ -11,6 +13,7 @@ import {
 } from '../../redux/selectors/DiscussionsSelectors';
 import { selectCourseId } from '../../redux/selectors/uiSelectors';
 import useSyncGeneralDiscussion from '../../hooks/syncGeneralDiscussion';
+import useQuestionSearchState from '../../hooks/useQuestionSearchState';
 import { useJoinRoom } from '../../hooks/socketConnectionHooks';
 
 
@@ -21,6 +24,9 @@ export default function LectureDiscussion() {
   const courseId = useSelector(selectCourseId);
 	const entries = useSelector(selectCourseGeneralDiscussion);
   const dispatch = useDispatch();
+
+  // Search state management
+  const searchState = useQuestionSearchState('course', courseId);
 
   useEffect(() => {
     // This is not completely right. as still the logic to force reload or by real time pinging
@@ -43,22 +49,31 @@ export default function LectureDiscussion() {
     <div className='container line-spacing'>
       <h2 className='text-center h3'>General Discussion</h2>
 			<p className='txt2 p-2 fs-5'>Course Discussion Forum</p>
-      <form className="d-flex mt-4 mb-5" role="search">
-        <input
-          className="form-control me-2 p-3"
-          type="search"
-          placeholder="Search the content of the course"
-          aria-label="Search"
+      
+      {/* Search Component */}
+      <SearchInput 
+        searchQuery={searchState.searchQuery}
+        setSearchQuery={searchState.setSearchQuery}
+        placeholder="Search questions and discussions..."
+      />
+
+      {/* Conditional rendering based on search state */}
+      {searchState.showSearchResults ? (
+        <QuestionsSearchResults
+          results={searchState.searchResults}
+          loading={searchState.searchLoading}
+          error={searchState.searchError}
+          query={searchState.debouncedQuery}
+          isLecture={false}
         />
-        <button className="btn btn-primary" type="submit">
-          Search
-        </button>
-      </form>
-        {isLoading ? (
-        <Loading />
       ) : (
-        <DiscussionEntries entries={entries} chunkSize={15} isLecture={false} />
+        isLoading ? (
+          <Loading />
+        ) : (
+          <DiscussionEntries entries={entries} chunkSize={15} isLecture={false} />
+        )
       )}
+
       <div>
         {askNewQuestion ? (
           <DiscussionEntryEditor onPublish={handlePublishQuestion} />

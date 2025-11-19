@@ -1,0 +1,470 @@
+/* ========================================
+   Lecture Page Styles
+   ======================================== */
+
+/* CSS Custom Properties (Variables) */
+:root {
+  --lecture-primary-color: #0d6efd;
+  --lecture-secondary-color: #6c757d;
+  --lecture-border-radius: 8px;
+  --lecture-transition: all 0.2s ease-in-out;
+  --lecture-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --lecture-hover-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --lecture-spacing-sm: 0.5rem;
+  --lecture-spacing-md: 1rem;
+  --lecture-spacing-lg: 1.5rem;
+  --lecture-spacing-xl: 2rem;
+}
+
+/* ========================================
+   Layout & Container
+   ======================================== */
+
+.lecture-container {
+  padding-top: var(--lecture-spacing-xl);
+  padding-bottom: var(--lecture-spacing-xl);
+}
+
+.lecture-content {
+  margin-bottom: var(--lecture-spacing-lg);
+}
+
+/* ========================================
+   Lecture Header
+   ======================================== */
+
+.lecture-header {
+  margin-bottom: var(--lecture-spacing-xl);
+}
+
+.lecture-title {
+  color: var(--lecture-primary-color);
+  margin-bottom: var(--lecture-spacing-sm);
+  margin-top: var(--lecture-spacing-xl);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.lecture-description {
+  color: var(--lecture-secondary-color);
+  font-size: 1rem;
+  line-height: 1.4;
+  margin-bottom: var(--lecture-spacing-lg);
+  max-width: none;
+}
+
+/* ========================================
+   Video Section
+   ======================================== */
+
+.lecture-video-container {
+  margin-bottom: var(--lecture-spacing-lg);
+  border-radius: var(--lecture-border-radius);
+  overflow: hidden;
+  box-shadow: var(--lecture-shadow);
+  transition: var(--lecture-transition);
+}
+
+.lecture-video-container:hover {
+  box-shadow: var(--lecture-hover-shadow);
+  transform: translateY(-2px);
+}
+
+.lecture-video-iframe {
+  width: 100%;
+  height: 350px;
+  border: none;
+  display: block;
+}
+
+/* ========================================
+   Details/Summary Sections
+   ======================================== */
+
+.lecture-section {
+  margin-bottom: var(--lecture-spacing-md);
+  border: 1px solid #e9ecef;
+  border-radius: var(--lecture-border-radius);
+  overflow: hidden;
+  transition: var(--lecture-transition);
+}
+
+.lecture-section:hover {
+  border-color: #d0d7de;
+  box-shadow: var(--lecture-shadow);
+}
+
+.lecture-section summary {
+  padding: var(--lecture-spacing-md);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #495057;
+  border: none;
+  outline: none;
+  transition: var(--lecture-transition);
+  position: relative;
+  user-select: none;
+}
+
+.lecture-section summary:hover {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  color: var(--lecture-primary-color);
+}
+
+.lecture-section summary:focus {
+  outline: 2px solid var(--lecture-primary-color);
+  outline-offset: -2px;
+}
+
+/* Summary arrow indicator */
+.lecture-section summary::after {
+  content: "▶";
+  position: absolute;
+  right: var(--lecture-spacing-md);
+  top: 50%;
+  transform: translateY(-50%) rotate(0deg);
+  transition: transform 0.2s ease;
+  font-size: 0.8rem;
+  color: var(--lecture-secondary-color);
+}
+
+.lecture-section[open] summary::after {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+/* ========================================
+   Resource Lists
+   ======================================== */
+
+.lecture-resources-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lecture-resource-item {
+  border-bottom: 1px solid #f1f3f4;
+  transition: var(--lecture-transition);
+}
+
+.lecture-resource-item:last-child {
+  border-bottom: none;
+}
+
+.lecture-resource-item:hover {
+  background-color: #f8f9fa;
+}
+
+.lecture-resource-link {
+  display: block;
+  padding: var(--lecture-spacing-md);
+  color: #495057 !important;
+  text-decoration: none !important;
+  transition: var(--lecture-transition);
+  position: relative;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+.lecture-resource-link:hover {
+  color: var(--lecture-primary-color) !important;
+  text-decoration: none !important;
+  padding-left: calc(var(--lecture-spacing-md) + 8px);
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+.lecture-resource-link:focus {
+  outline: 2px solid var(--lecture-primary-color);
+  outline-offset: -2px;
+  color: var(--lecture-primary-color) !important;
+  text-decoration: none !important;
+}
+
+.lecture-resource-link:visited {
+  color: #495057 !important;
+}
+
+.lecture-resource-link:active {
+  color: var(--lecture-primary-color) !important;
+}
+
+/* Download link specific styles */
+.lecture-resource-link.downloading {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+  color: var(--lecture-secondary-color) !important;
+}
+
+/* ========================================
+   Nested Details Sections
+   ======================================== */
+
+.lecture-nested-section {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.lecture-nested-section summary {
+  background: #f8f9fa;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: var(--lecture-spacing-sm) var(--lecture-spacing-md);
+}
+
+.lecture-nested-section summary:hover {
+  background: #e9ecef;
+}
+
+.lecture-nested-list {
+  padding: var(--lecture-spacing-sm) var(--lecture-spacing-md) var(--lecture-spacing-md);
+  margin: 0;
+  list-style: none;
+}
+
+.lecture-nested-list li {
+  margin-bottom: var(--lecture-spacing-sm);
+  padding-left: var(--lecture-spacing-md);
+  position: relative;
+}
+
+.lecture-nested-list li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--lecture-primary-color);
+  font-weight: bold;
+}
+
+.lecture-nested-list a {
+  color: #495057 !important;
+  text-decoration: none !important;
+  transition: var(--lecture-transition);
+  display: inline-block;
+  padding: 0.25rem 0;
+}
+
+.lecture-nested-list a:hover {
+  color: var(--lecture-primary-color) !important;
+  text-decoration: none !important;
+  padding-left: 0.5rem;
+}
+
+.lecture-nested-list a:focus {
+  outline: 2px solid var(--lecture-primary-color);
+  outline-offset: 2px;
+  color: var(--lecture-primary-color) !important;
+}
+
+.lecture-nested-list a:visited {
+  color: #495057 !important;
+}
+
+.lecture-nested-list a:active {
+  color: var(--lecture-primary-color) !important;
+}
+
+/* ========================================
+   Empty States
+   ======================================== */
+
+.lecture-empty-state {
+  padding: var(--lecture-spacing-lg);
+  text-align: center;
+  color: var(--lecture-secondary-color);
+  font-style: italic;
+  background-color: #f8f9fa;
+  border-radius: var(--lecture-border-radius);
+  margin: var(--lecture-spacing-md) 0;
+}
+
+/* ========================================
+   Error States
+   ======================================== */
+
+.lecture-error {
+  text-align: center;
+  color: #dc3545;
+  padding: var(--lecture-spacing-xl);
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border-radius: var(--lecture-border-radius);
+  border: 1px solid #f5c6cb;
+}
+
+/* ========================================
+   Discussion Section
+   ======================================== */
+
+.lecture-discussion {
+  margin-top: var(--lecture-spacing-xl);
+  padding-top: var(--lecture-spacing-xl);
+  border-top: 2px solid #e9ecef;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 992px) {
+  .lecture-container {
+    padding-top: var(--lecture-spacing-lg);
+  }
+  
+  .lecture-title {
+    font-size: 1.75rem;
+  }
+  
+  .lecture-video-iframe {
+    height: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --lecture-spacing-sm: 0.375rem;
+    --lecture-spacing-md: 0.75rem;
+    --lecture-spacing-lg: 1rem;
+    --lecture-spacing-xl: 1.25rem;
+  }
+  
+  .lecture-title {
+    font-size: 1.5rem;
+    margin-top: var(--lecture-spacing-lg);
+  }
+  
+  .lecture-description {
+    font-size: 0.9rem;
+  }
+  
+  .lecture-video-iframe {
+    height: 220px;
+  }
+  
+  .lecture-section summary {
+    font-size: 1rem;
+    padding: var(--lecture-spacing-sm) var(--lecture-spacing-md);
+  }
+  
+  .lecture-resource-link {
+    padding: var(--lecture-spacing-sm) var(--lecture-spacing-md);
+  }
+}
+
+@media (max-width: 576px) {
+  .lecture-video-iframe {
+    height: 200px;
+  }
+  
+  .lecture-section summary {
+    font-size: 0.95rem;
+  }
+  
+  .lecture-nested-list {
+    padding-left: var(--lecture-spacing-sm);
+  }
+}
+
+/* ========================================
+   Animation & Transitions
+   ======================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lecture-fade-in {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Loading shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.lecture-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ========================================
+   Accessibility Improvements
+   ======================================== */
+
+.lecture-section summary:focus-visible,
+.lecture-resource-link:focus-visible {
+  outline: 2px solid var(--lecture-primary-color);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .lecture-section,
+  .lecture-video-container,
+  .lecture-resource-link,
+  .lecture-fade-in {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .lecture-section {
+    border-width: 2px;
+  }
+  
+  .lecture-section summary {
+    background: #ffffff;
+    border-bottom: 2px solid #000000;
+  }
+  
+  .lecture-resource-link {
+    border-left: 3px solid transparent;
+  }
+  
+  .lecture-resource-link:hover,
+  .lecture-resource-link:focus {
+    border-left-color: var(--lecture-primary-color);
+  }
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+  .lecture-video-container {
+    display: none;
+  }
+  
+  .lecture-section summary::after {
+    display: none;
+  }
+  
+  .lecture-section[open] summary {
+    page-break-inside: avoid;
+  }
+  
+  .lecture-section {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}

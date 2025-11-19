@@ -1,24 +1,62 @@
-# School Hub
+# ProLearningHub
 
-School Hub is a user-friendly platform that facilitates communication between teachers and students, enabling them to easily share resources, ask questions, and receive feedback. The platform offers students access to various learning materials, allowing them to review and gain a deeper understanding of lessons. By creating an interactive learning environment, School Hub enhances the connection between students and teachers beyond the classroom.
+**Harvard-Inspired Learning, Accessible for All.**
 
-## Features
+ProLearningHub lets you create a standalone app for your course—or a portal for
+multiple courses—delivering a Harvard-inspired experience with everything
+students need in one place. No more scattered tools, missing resources, or
+disconnected discussions—just seamless learning.
 
-- **Teacher-Student Communication**: Students can ask questions and get answers directly from their teachers.
-- **Resource Sharing**: Teachers can upload resources for students to access at any time.
-- **Feedback System**: Teachers can provide feedback on students' questions and progress.
-- **Accessible Learning Materials**: Students can access shared resources to aid in their learning.
+[Request a Demo](https://prolearninghub.vercel.app/request-demo) | [Explore the Platform](https://testcourse-prolearninghub.netlify.app/)
 
-## Tech Stack
+---
 
-- **Frontend**: React
-- **Backend**: Django
-- **Database**: PostgreSQL
-- **Authentication**: OpenCV, TensorFlow (facial recognition)
+## ✨ Features
 
-## Endpoints
+Everything you need for a complete learning experience.
 
-You can access the API [here](https://georgekwm1.pythonanywhere.com/api) for a list of endpoints.
+### 📚 A Complete Lecture Experience
+- **All-in-One Formats**: Video, audio, and transcripts in one place.
+- **Supporting Materials**: Notes, slides, problem sets, quizzes, and demos.
+- **Built-in Discussions**: Each lecture has its own dedicated forum for structured Q&A.
+
+### 💬 Discussion & Collaboration Made Simple
+- **Built-in Forums**: Every lecture and the course as a whole have dedicated discussion spaces.
+- **Real-time Updates**: Stay in sync with the latest conversations.
+- **Rich Text & Attachments**: Full-text formatting and media support.
+- **Threaded Replies**: Keep conversations clear and easy to follow.
+- **Upvoted Answers**: The best answers rise to the top.
+
+### 📢 Stay Informed with Announcements
+- **Centralized Updates**: Professors and admins can send structured announcements.
+- **Interactive Discussions**: Announcements support threaded comments for clarity.
+
+### 🛠️ Featured Study & Productivity Tools
+- **Group Study Sessions**: Integrations with Flocus & Study Together.
+- **Focus Tools**: Pomodoro timers and "Study With Me" videos.
+- **Learn How to Learn**: Courses on study habits and effective learning.
+- **Organization Tools**: Quick access to Notion, TicTic, RemindMe, and more.
+
+---
+
+## 🚀 Why Choose ProLearningHub?
+
+- **Focus on Content**: You create the content; we handle the rest.
+- **By Students, For Students**: Built to fill the real gaps in online learning.
+- **All-in-One Platform**: Combines structured lectures, discussions, and study tools.
+- **Offline-First**: Smart caching and syncing for low-connectivity areas.
+- **Study Smarter**: Integrated tools for focus, habit-building, and collaboration.
+
+---
+
+## 💻 Tech Stack
+
+- **Frontend**: React, Redux, Socket.IO Client
+- **Backend**: Node.js, Express, Socket.IO, Prisma
+- **Database**: MySQL
+- **Deployment**: Vercel (Frontend), Docker
+
+---
 
 ## Getting Started
 
@@ -26,97 +64,30 @@ Follow these steps to clone and run the project locally.
 
 ### Prerequisites
 
-- Node.js and npm (for React)
-- Python 3.8+ (for Django)
-- PostgreSQL (for database setup)
+- Node.js and npm
+- MySQL 5.8+
+- Docker and Docker Compose
 
 ### Installation
 
-#### Clone the repository
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/Pro-Learning-Hub/Pro-Learning-Hub.git
+    cd Pro-Learning-Hub
+    ```
 
-```bash
-git clone https://github.com/georgekwm1/School-Hub.git
-cd school-hub
-```
+2.  **Set up environment variables**:
+    - Create a `.env` file in the `front-end` directory and add `VITE_BACKEND_DOMAIN=http://localhost:3001`.
+    - Create a `.env` file in the `Back-End` directory with your database credentials and other required variables.
 
-### Backend Setup (Django)
+3.  **Run the application using Docker**:
+    ```bash
+    docker-compose up --build
+    ```
 
-1. **Navigate to the backend directory**:
-   ```bash
-   cd backend
-   ```
+The frontend will be available at `http://localhost:3000` and the backend at `http://localhost:3001`.
 
-2. **Set up a virtual environment**:
-   ```bash
-   python -m venv env
-   source env/bin/activate  # On Windows, use `env\Scripts\activate`
-   ```
-
-3. **Install the dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure the PostgreSQL database** in `settings.py`:
-   - Update the database settings with your credentials.
-
-5. **Run the migrations**:
-   ```bash
-   python manage.py migrate
-   ```
-
-6. **Create a superuser** to access the Django admin:
-   ```bash
-   python manage.py createsuperuser
-   ```
-
-7. **Run the development server**:
-   ```bash
-   python manage.py runserver
-   ```
-
-   The backend should now be running at `http://127.0.0.1:8000`.
-
-### Frontend Setup (React)
-
-1. **Navigate to the frontend directory**:
-   ```bash
-   cd ../frontend
-   ```
-
-2. **Install the dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server**:
-   ```bash
-   npm start
-   ```
-
-   The frontend should now be running at `http://localhost:3000`.
-
-### Project Structure
-
-```plaintext
-school-hub/
-│                        # Django backend files
-|
-│── manage.py
-│── settings.py
-│
-└── front-end/             # React frontend folder
-    ├── src/
-    ├── public/
-    └── ...
-```
-
-## Collaborators
-
-- [Oluwatimilehin Erinle](https://github.com/timmySpark) - Backend-Developer
-- [Ogbonna George](https://github.com/georgekwm1) - Team-Lead (Backend-Developer)
-- [Hamisu Yusuf](https://github.com/hamisuyusu) - Backend-Developer
-- [Loay Al-Said](https://github.com/loayalsaid1) - Front-end-Developer
+---
 
 ## Contributing
 

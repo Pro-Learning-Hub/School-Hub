@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube Downloader</title>
+  <style>
+    #loading { display: none; color: green; font-weight: bold; }
+    #infoBox { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>YouTube Video Downloader</h2>
+  <input id="url" type="text" placeholder="Enter YouTube URL" size="50" />
+  <select id="type">
+    <option value="mp4">MP4 (video)</option>
+    <option value="mp3">MP3 (audio)</option>
+  </select>
+  <button id="downloadBtn">Download</button>
+
+  <div id="loading">🔄 Preparing download...</div>
+  <div id="infoBox"></div>
+
+  <hr>
+  <h3>Get Video Transcription or Subtitles</h3>
+  <input id="transcriptUrl" type="text" placeholder="Enter YouTube URL" size="50" />
+  <select id="transcriptFormat">
+    <option value="txt">Transcription (txt)</option>
+    <option value="srt">Subtitles (srt)</option>
+  </select>
+  <button id="transcriptBtn">Get Transcript/Subtitles</button>
+  <div id="transcriptStatus"></div>
+
+  <script>
+    const btn = document.getElementById('downloadBtn');
+    const urlInput = document.getElementById('url');
+    const typeSelect = document.getElementById('type');
+    const loading = document.getElementById('loading');
+    const infoBox = document.getElementById('infoBox');
+
+    function formatDuration(s) { const m = Math.floor(s/60), sec = s%60; return `${m}:${sec.toString().padStart(2,'0')}`; }
+    function formatSize(b) { return b ? `${(b/1024/1024).toFixed(1)} MB` : 'Unknown'; }
+
+    btn.addEventListener('click', () => {
+      const url = urlInput.value.trim();
+      const type = typeSelect.value;
+      if (!url) return alert('Enter URL');
+
+      loading.style.display = 'block';
+      infoBox.innerHTML = '';
+
+      fetch(`/info?url=${encodeURIComponent(url)}`)
+        .then(r => r.json())
+        .then(info => {
+          infoBox.innerHTML = `
+            <p><strong>Title:</strong> ${info.title}</p>
+          `;
+
+          // trigger streaming download
+          const link = document.createElement('a');
+          link.href = `/proxy?url=${encodeURIComponent(url)}&isAudioOnly=${type === "mp3"}`;
+          link.download = info.filename || (type === 'mp3' ? 'audio.mp3' : 'video.mp4');
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          loading.style.display = 'none';
+        })
+        .catch(() => {
+          loading.style.display = 'none';
+          infoBox.textContent = 'Error retrieving info.';
+        });
+    });
+
+    // Transcription section logic
+    const transcriptBtn = document.getElementById('transcriptBtn');
+    const transcriptUrl = document.getElementById('transcriptUrl');
+    const transcriptFormat = document.getElementById('transcriptFormat');
+    const transcriptStatus = document.getElementById('transcriptStatus');
+
+    transcriptBtn.addEventListener('click', async () => {
+      const url = transcriptUrl.value.trim();
+      const format = transcriptFormat.value;
+      transcriptStatus.textContent = '';
+      if (!url) return alert('Enter YouTube URL for transcription');
+
+      transcriptStatus.textContent = '🔄 Fetching...';
+      try {
+        const response = await fetch(`/transcript?url=${encodeURIComponent(url)}&format=${format}`);
+        if (!response.ok) throw new Error('Failed to fetch transcript');
+        else {
+          const blob = await response.blob();
+          const downloadUrl = URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = downloadUrl;
+
+          let fileName = decodeURIComponent(response.headers.get('X-File-Name'));
+          if (!fileName)
+            fileName = format === 'txt' ? 'transcript.txt' : 'subtitles.srt';
+          a.download = fileName;
+
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(downloadUrl);
+          transcriptStatus.textContent = '✅ Download started!';
+        }
+      } catch (e) {
+        transcriptStatus.textContent = '❌ Error fetching transcript.';
+      }
+    });
+  </script>
+</body>
+</html>

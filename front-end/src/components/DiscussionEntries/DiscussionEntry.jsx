@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CircleArrowUp, Dot, MessagesSquare } from 'lucide-react';
 import { formatDate } from '../../utils/utilFunctions';
-import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import {
   makeGeneralQuestionIsUpvotedSelector,
