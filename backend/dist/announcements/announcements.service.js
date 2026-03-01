@@ -53,7 +53,7 @@ let AnnouncementsService = class AnnouncementsService {
         if (!isAdmin)
             throw new common_1.ForbiddenException('User is not a course admin');
         const id = (0, uuid_1.v4)();
-        await this.dataSource.query('INSERT INTO announcements (id, courseId, userId, title, body) VALUES (?, ?, ?, ?, ?)', [id, courseId, userId, dto.title, dto.details]);
+        await this.dataSource.query('INSERT INTO announcements (id, courseId, userId, title, body) VALUES (?, ?, ?, ?, ?)', [id, courseId, userId, dto.title, dto.body]);
         const user = await this.usersService.getUserPublicData(userId);
         const [newAnnouncement] = await this.dataSource.query('SELECT * FROM announcements WHERE id = ?', [id]);
         const { userId: _, ...rest } = newAnnouncement;
@@ -73,9 +73,9 @@ let AnnouncementsService = class AnnouncementsService {
             updateFields.push('title = ?');
             updateValues.push(dto.title);
         }
-        if (dto.details !== undefined) {
+        if (dto.body !== undefined) {
             updateFields.push('body = ?');
-            updateValues.push(dto.details);
+            updateValues.push(dto.body);
         }
         if (updateFields.length > 0) {
             await this.dataSource.query(`UPDATE announcements SET ${updateFields.join(', ')} WHERE id = ?`, [...updateValues, id]);

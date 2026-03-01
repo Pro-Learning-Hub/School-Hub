@@ -7,5 +7,5 @@ export class UpdateAnnouncementDto {
 
   @IsString()
   @IsOptional()
-  details?: string;
+  body?: string;
 }

@@ -7,5 +7,5 @@ export class CreateAnnouncementDto {
 
   @IsString()
   @IsNotEmpty()
-  details: string;
+  body: string;
 }

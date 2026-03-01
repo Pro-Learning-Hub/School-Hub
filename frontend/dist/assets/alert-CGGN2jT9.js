@@ -1,6 +1,0 @@
-import{d as i,j as r,o as a,w as c}from"./index-CrjVI3bj.js";/**
- * @license lucide-react v0.475.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */const l=[["circle",{cx:"12",cy:"12",r:"10",key:"1mglay"}],["line",{x1:"12",x2:"12",y1:"8",y2:"12",key:"1pkeuh"}],["line",{x1:"12",x2:"12.01",y1:"16",y2:"16",key:"4dfq90"}]],o=i("CircleAlert",l),d=c("relative w-full rounded-lg border px-4 py-3 text-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current",{variants:{variant:{default:"bg-card text-card-foreground",destructive:"text-destructive bg-card [&>svg]:text-current *:data-[slot=alert-description]:text-destructive/80"}},defaultVariants:{variant:"default"}});function g({className:t,variant:e,...s}){return r.jsx("div",{"data-slot":"alert",role:"alert",className:a(d({variant:e}),t),...s})}function u({className:t,...e}){return r.jsx("div",{"data-slot":"alert-description",className:a("text-muted-foreground col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed",t),...e})}export{g as A,o as C,u as a};

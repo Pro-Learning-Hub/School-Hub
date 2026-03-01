@@ -23,5 +23,5 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], UpdateAnnouncementDto.prototype, "details", void 0);
+], UpdateAnnouncementDto.prototype, "body", void 0);
 //# sourceMappingURL=update-announcement.dto.js.map

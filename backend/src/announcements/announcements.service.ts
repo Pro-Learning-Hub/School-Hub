@@ -53,7 +53,7 @@ export class AnnouncementsService {
     const id = uuidv4();
     await this.dataSource.query(
       'INSERT INTO announcements (id, courseId, userId, title, body) VALUES (?, ?, ?, ?, ?)',
-      [id, courseId, userId, dto.title, dto.details],
+      [id, courseId, userId, dto.title, dto.body],
     );
 
     const user = await this.usersService.getUserPublicData(userId);
@@ -74,7 +74,7 @@ export class AnnouncementsService {
     const updateFields: string[] = [];
     const updateValues: any[] = [];
     if (dto.title !== undefined) { updateFields.push('title = ?'); updateValues.push(dto.title); }
-    if (dto.details !== undefined) { updateFields.push('body = ?'); updateValues.push(dto.details); }
+    if (dto.body !== undefined) { updateFields.push('body = ?'); updateValues.push(dto.body); }
 
     if (updateFields.length > 0) {
       await this.dataSource.query(

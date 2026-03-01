@@ -6,7 +6,7 @@ const courseId = import.meta.env.VITE_COURSE_ID
 export const discussionApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getGeneralDiscussion: builder.query<{ results: Question[]; lastFetched: string }, void>({
-      query: () => `/courses/${courseId}/generalDiscussion`,
+      query: () => `/courses/${courseId}/general_discussion`,
       providesTags: ['Discussion'],
     }),
     addGeneralQuestion: builder.mutation<
@@ -14,7 +14,7 @@ export const discussionApi = api.injectEndpoints({
       { title: string; body: string }
     >({
       query: (data) => ({
-        url: `/courses/${courseId}/generalDiscussion`,
+        url: `/courses/${courseId}/general_discussion`,
         method: 'POST',
         body: data,
       }),

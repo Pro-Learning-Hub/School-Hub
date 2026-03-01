@@ -13,7 +13,8 @@ import { AlertCircle } from 'lucide-react'
 
 const schema = z
   .object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
+    firstName: z.string().min(1, 'First name is required'),
+    lastName: z.string().min(1, 'Last name is required'),
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string(),
@@ -49,7 +50,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userData: { name: data.name, email: data.email, password: data.password },
+          userData: { firstName: data.firstName, lastName: data.lastName, email: data.email, password: data.password },
           courseId,
         }),
       })
@@ -75,9 +76,15 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       )}
 
       <div className="grid gap-1">
-        <Label htmlFor="reg-name">Full Name</Label>
-        <Input id="reg-name" placeholder="Jane Doe" {...register('name')} aria-invalid={!!errors.name} />
-        {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
+        <Label htmlFor="reg-first-name">First Name</Label>
+        <Input id="reg-first-name" placeholder="Jane" {...register('firstName')} aria-invalid={!!errors.firstName} />
+        {errors.firstName && <p className="text-destructive text-sm">{errors.firstName.message}</p>}
+      </div>
+
+      <div className="grid gap-1">
+        <Label htmlFor="reg-last-name">Last Name</Label>
+        <Input id="reg-last-name" placeholder="Doe" {...register('lastName')} aria-invalid={!!errors.lastName} />
+        {errors.lastName && <p className="text-destructive text-sm">{errors.lastName.message}</p>}
       </div>
 
       <div className="grid gap-1">
