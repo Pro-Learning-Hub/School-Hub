@@ -147,7 +147,7 @@ export class LecturesService {
       for (const resource of dto.resources) {
         await this.dataSource.query(
           'INSERT INTO lectureResources (id, title, url, type, lectureId) VALUES (?, ?, ?, ?, ?)',
-          [resource.id || uuidv4(), resource.title, resource.url, resource.type, lectureId],
+          [uuidv4(), resource.title, resource.url, resource.type, lectureId],
         );
       }
     }

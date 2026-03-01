@@ -16,9 +16,11 @@ exports.EventsModule = EventsModule;
 exports.EventsModule = EventsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            jwt_1.JwtModule.register({
-                secret: process.env.TOKEN_SECRET_KEY || 'secret',
-                signOptions: { expiresIn: '7d' },
+            jwt_1.JwtModule.registerAsync({
+                useFactory: () => ({
+                    secret: process.env.TOKEN_SECRET_KEY,
+                    signOptions: { expiresIn: '7d' },
+                }),
             }),
         ],
         providers: [events_gateway_1.EventsGateway],

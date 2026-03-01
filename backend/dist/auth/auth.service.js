@@ -111,8 +111,8 @@ let AuthService = class AuthService {
         const [existingUser] = await this.dataSource.query('SELECT id FROM users WHERE email = ?', [userData.email]);
         if (existingUser)
             throw new common_1.ConflictException('Email already exists');
-        const userId = userData.sub;
-        await this.dataSource.query('INSERT INTO users (id, googleId, email, firstName, lastName, pictureUrl, pictureThumbnail) VALUES (?, ?, ?, ?, ?, ?, ?)', [userId, userId, userData.email, userData.given_name, userData.family_name, userData.picture, userData.picture]);
+        const userId = (0, uuid_1.v4)();
+        await this.dataSource.query('INSERT INTO users (id, googleId, email, firstName, lastName, pictureUrl, pictureThumbnail) VALUES (?, ?, ?, ?, ?, ?, ?)', [userId, userData.sub, userData.email, userData.given_name, userData.family_name, userData.picture, userData.picture]);
         if (courseId) {
             await this.dataSource.query('INSERT INTO courseEnrollments (userId, courseId) VALUES (?, ?)', [userId, courseId]);
         }

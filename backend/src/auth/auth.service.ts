@@ -132,10 +132,10 @@ export class AuthService {
     const [existingUser] = await this.dataSource.query('SELECT id FROM users WHERE email = ?', [userData.email]);
     if (existingUser) throw new ConflictException('Email already exists');
 
-    const userId = userData.sub;
+    const userId = uuidv4();
     await this.dataSource.query(
       'INSERT INTO users (id, googleId, email, firstName, lastName, pictureUrl, pictureThumbnail) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [userId, userId, userData.email, userData.given_name, userData.family_name, userData.picture, userData.picture],
+      [userId, userData.sub, userData.email, userData.given_name, userData.family_name, userData.picture, userData.picture],
     );
 
     if (courseId) {

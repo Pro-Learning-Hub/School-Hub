@@ -27,13 +27,18 @@ export class QuestionsService {
   ) {}
 
   async getUpvoteStatus(userId: string, resourceId: string, resourceType: 'question' | 'reply'): Promise<boolean> {
-    const idColumn = resourceType === 'question' ? 'questionId' : 'replyId';
-    const allowedColumns = ['questionId', 'replyId'];
-    if (!allowedColumns.includes(idColumn)) return false;
-    const result = await this.dataSource.query(
-      `SELECT userId FROM votes WHERE userId = ? AND ${idColumn} = ?`,
-      [userId, resourceId],
-    );
+    let result: any[];
+    if (resourceType === 'question') {
+      result = await this.dataSource.query(
+        'SELECT userId FROM votes WHERE userId = ? AND questionId = ?',
+        [userId, resourceId],
+      );
+    } else {
+      result = await this.dataSource.query(
+        'SELECT userId FROM votes WHERE userId = ? AND replyId = ?',
+        [userId, resourceId],
+      );
+    }
     return result.length > 0;
   }
 

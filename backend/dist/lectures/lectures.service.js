@@ -117,7 +117,7 @@ let LecturesService = class LecturesService {
         if (dto.resources !== undefined) {
             await this.dataSource.query('DELETE FROM lectureResources WHERE lectureId = ?', [lectureId]);
             for (const resource of dto.resources) {
-                await this.dataSource.query('INSERT INTO lectureResources (id, title, url, type, lectureId) VALUES (?, ?, ?, ?, ?)', [resource.id || (0, uuid_1.v4)(), resource.title, resource.url, resource.type, lectureId]);
+                await this.dataSource.query('INSERT INTO lectureResources (id, title, url, type, lectureId) VALUES (?, ?, ?, ?, ?)', [(0, uuid_1.v4)(), resource.title, resource.url, resource.type, lectureId]);
             }
         }
         const [updated] = await this.dataSource.query('SELECT * FROM lectures WHERE id = ?', [lectureId]);

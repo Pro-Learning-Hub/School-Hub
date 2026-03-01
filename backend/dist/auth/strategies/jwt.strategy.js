@@ -15,10 +15,14 @@ const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor() {
+        const secret = process.env.TOKEN_SECRET_KEY;
+        if (!secret) {
+            throw new common_1.InternalServerErrorException('TOKEN_SECRET_KEY environment variable is not set');
+        }
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: process.env.TOKEN_SECRET_KEY || 'secret',
+            secretOrKey: secret,
         });
     }
     async validate(payload) {

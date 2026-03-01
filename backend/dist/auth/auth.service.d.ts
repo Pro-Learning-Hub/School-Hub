@@ -52,7 +52,7 @@ export declare class AuthService {
     googleRegister(dto: GoogleAuthDto): Promise<{
         accessToken: string;
         user: {
-            id: any;
+            id: string;
             email: any;
             role: string;
             firstName: any;

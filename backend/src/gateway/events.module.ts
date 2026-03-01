@@ -4,9 +4,11 @@ import { EventsGateway } from './events.gateway';
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: process.env.TOKEN_SECRET_KEY || 'secret',
-      signOptions: { expiresIn: '7d' },
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: process.env.TOKEN_SECRET_KEY,
+        signOptions: { expiresIn: '7d' },
+      }),
     }),
   ],
   providers: [EventsGateway],

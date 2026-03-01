@@ -33,11 +33,13 @@ let QuestionsService = class QuestionsService {
         this.usersService = usersService;
     }
     async getUpvoteStatus(userId, resourceId, resourceType) {
-        const idColumn = resourceType === 'question' ? 'questionId' : 'replyId';
-        const allowedColumns = ['questionId', 'replyId'];
-        if (!allowedColumns.includes(idColumn))
-            return false;
-        const result = await this.dataSource.query(`SELECT userId FROM votes WHERE userId = ? AND ${idColumn} = ?`, [userId, resourceId]);
+        let result;
+        if (resourceType === 'question') {
+            result = await this.dataSource.query('SELECT userId FROM votes WHERE userId = ? AND questionId = ?', [userId, resourceId]);
+        }
+        else {
+            result = await this.dataSource.query('SELECT userId FROM votes WHERE userId = ? AND replyId = ?', [userId, resourceId]);
+        }
         return result.length > 0;
     }
     async getGeneralDiscussion(courseId, userId, lastFetched) {

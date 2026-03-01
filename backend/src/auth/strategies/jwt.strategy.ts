@@ -1,14 +1,18 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
+    const secret = process.env.TOKEN_SECRET_KEY;
+    if (!secret) {
+      throw new InternalServerErrorException('TOKEN_SECRET_KEY environment variable is not set');
+    }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.TOKEN_SECRET_KEY || 'secret',
+      secretOrKey: secret,
     });
   }
 
